@@ -37,7 +37,25 @@ const generateInteractiveQuizzesPrompt = ai.definePrompt({
   name: 'generateInteractiveQuizzesPrompt',
   input: {schema: GenerateInteractiveQuizzesInputSchema},
   output: {schema: GenerateInteractiveQuizzesOutputSchema},
-  prompt: `You are a quiz generator. Generate {{numberOfQuestions}} interactive quizzes from the following learning material:\n\n{{learningMaterial}}`,
+  prompt: `You are a quiz generator. Generate {{numberOfQuestions}} multiple-choice questions (MCQs) based on the following learning material.
+Each question should be in the following format:
+<Question Number>. <Question Text>
+A) <Option A>
+B) <Option B>
+C) <Option C>
+D) <Option D>
+Answer: <Correct Letter>
+
+For example:
+1. What is the capital of France?
+A) London
+B) Berlin
+C) Paris
+D) Madrid
+Answer: C
+
+Learning Material:
+{{learningMaterial}}`,
 });
 
 const generateInteractiveQuizzesFlow = ai.defineFlow(
