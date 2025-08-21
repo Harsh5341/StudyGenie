@@ -3,6 +3,7 @@ export interface QuizQuestion {
   question: string;
   options: string[];
   correctAnswer: string;
+  topic: string;
   userAnswer?: string;
   isCorrect?: boolean;
 }
@@ -34,4 +35,10 @@ export interface Message {
 export interface AiTeacherResponse {
   question: string;
   answer: string;
+}
+
+export interface QuizCompletionData {
+  score: number;
+  totalQuestions: number;
+  topicPerformance: Record<string, { correct: number; total: number }>;
 }

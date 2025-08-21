@@ -4,22 +4,34 @@
 import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';
-import { Target, BarChart3, Flame } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label, Cell } from 'recharts';
+import { Target, BarChart3, Flame, Map } from "lucide-react";
 
 interface ProgressDashboardProps {
   studyGuide: StudyGuide;
   quizScore: number | null;
   totalQuestions: number;
   studyStreak: number;
+  topicPerformance: Record<string, { correct: number; total: number }>;
 }
 
-export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak }: ProgressDashboardProps) {
+const getProficiencyColor = (percentage: number) => {
+  if (percentage < 33) return 'hsl(var(--destructive))';
+  if (percentage < 66) return 'hsl(var(--chart-4))';
+  return 'hsl(var(--chart-2))';
+};
+
+export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
   const quizData = quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
   ] : [];
 
   const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
+
+  const heatmapData = Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
+    name: topic,
+    proficiency: total > 0 ? (correct / total) * 100 : 0,
+  }));
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
@@ -98,11 +110,32 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
 
       <Card className="lg:col-span-3">
         <CardHeader>
-          <CardTitle className="font-headline text-lg">Knowledge Heatmap</CardTitle>
+          <CardTitle className="font-headline text-lg flex items-center">
+             <Map className="mr-2" />
+            Knowledge Heatmap
+            </CardTitle>
         </CardHeader>
         <CardContent>
-           <div className="h-[120px] flex items-center justify-center">
-             <p className="text-muted-foreground">Your topic proficiency will appear here.</p>
+           <div className="h-[250px] flex items-center justify-center">
+            {heatmapData.length > 0 ? (
+               <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={heatmapData} layout="horizontal" margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={1} />
+                  <YAxis domain={[0, 100]} unit="%" />
+                  <Tooltip 
+                    formatter={(value) => [`${Math.round(value as number)}%`, "Proficiency"]}
+                  />
+                  <Bar dataKey="proficiency">
+                    {heatmapData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={getProficiencyColor(entry.proficiency)} />
+                    ))}
+                  </Bar>
+                </BarChart>
+               </ResponsiveContainer>
+            ) : (
+              <p className="text-muted-foreground">Your topic proficiency will appear here after a quiz.</p>
+            )}
            </div>
         </CardContent>
       </Card>

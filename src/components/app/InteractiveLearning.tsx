@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { PracticeProblem, StudyGuide } from "@/lib/types";
+import type { PracticeProblem, StudyGuide, QuizCompletionData } from "@/lib/types";
 import { Quiz } from "@/components/app/Quiz";
 import { Flashcard } from "@/components/app/Flashcard";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
 
 interface InteractiveLearningProps {
   studyGuide: StudyGuide;
-  onQuizComplete: (score: number, totalQuestions: number) => void;
+  onQuizComplete: (data: QuizCompletionData) => void;
 }
 
 function PracticeProblems({ problems }: { problems: PracticeProblem[] }) {

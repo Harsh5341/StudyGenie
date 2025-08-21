@@ -21,7 +21,12 @@ export type GenerateInteractiveQuizzesInput = z.infer<
 >;
 
 const GenerateInteractiveQuizzesOutputSchema = z.object({
-  quizzes: z.array(z.string()).describe('The generated interactive quizzes.'),
+  quizzes: z.array(z.object({
+    question: z.string().describe("The question text."),
+    options: z.array(z.string()).describe("An array of 4 multiple-choice options."),
+    correctAnswer: z.string().describe("The correct answer from the options."),
+    topic: z.string().describe("The specific topic or concept this question is about (e.g., Photosynthesis, Quadratic Equations). This should be 1-3 words.")
+  })).describe('The generated interactive quizzes.'),
 });
 export type GenerateInteractiveQuizzesOutput = z.infer<
   typeof GenerateInteractiveQuizzesOutputSchema
@@ -38,21 +43,7 @@ const generateInteractiveQuizzesPrompt = ai.definePrompt({
   input: {schema: GenerateInteractiveQuizzesInputSchema},
   output: {schema: GenerateInteractiveQuizzesOutputSchema},
   prompt: `You are a quiz generator. Generate {{numberOfQuestions}} multiple-choice questions (MCQs) based on the following learning material.
-Each question should be in the following format:
-<Question Number>. <Question Text>
-A) <Option A>
-B) <Option B>
-C) <Option C>
-D) <Option D>
-Answer: <Correct Letter>
-
-For example:
-1. What is the capital of France?
-A) London
-B) Berlin
-C) Paris
-D) Madrid
-Answer: C
+For each question, provide the question text, 4 options, the correct answer, and a brief topic for the question.
 
 Learning Material:
 {{learningMaterial}}`,

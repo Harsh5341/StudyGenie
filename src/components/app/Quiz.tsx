@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { QuizQuestion } from "@/lib/types";
+import type { QuizQuestion, QuizCompletionData } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 interface QuizProps {
   questions: QuizQuestion[];
-  onQuizComplete: (score: number, totalQuestions: number) => void;
+  onQuizComplete: (data: QuizCompletionData) => void;
 }
 
 export function Quiz({ questions, onQuizComplete }: QuizProps) {
@@ -33,10 +33,27 @@ export function Quiz({ questions, onQuizComplete }: QuizProps) {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
       } else {
-        const finalScore = newUserAnswers.reduce((acc, answer, index) => {
+        const finalAnswers = [...newUserAnswers];
+        const finalScore = finalAnswers.reduce((acc, answer, index) => {
           return answer === questions[index].correctAnswer ? acc + 1 : acc;
         }, 0);
-        onQuizComplete(finalScore, questions.length);
+
+        const topicPerformance: Record<string, { correct: number; total: number }> = {};
+        questions.forEach((q, index) => {
+          if (!topicPerformance[q.topic]) {
+            topicPerformance[q.topic] = { correct: 0, total: 0 };
+          }
+          topicPerformance[q.topic].total++;
+          if (finalAnswers[index] === q.correctAnswer) {
+            topicPerformance[q.topic].correct++;
+          }
+        });
+        
+        onQuizComplete({
+          score: finalScore,
+          totalQuestions: questions.length,
+          topicPerformance,
+        });
         setShowResults(true);
       }
     }
@@ -47,7 +64,7 @@ export function Quiz({ questions, onQuizComplete }: QuizProps) {
     setUserAnswers([]);
     setSelectedOption(null);
     setShowResults(false);
-    onQuizComplete(0, questions.length);
+    onQuizComplete({ score: 0, totalQuestions: questions.length, topicPerformance: {} });
   };
   
   if (!questions || questions.length === 0) {
@@ -76,7 +93,7 @@ export function Quiz({ questions, onQuizComplete }: QuizProps) {
           <div className="space-y-4">
             {questions.map((q, index) => (
               <div key={index} className="p-4 border rounded-lg">
-                <p className="font-semibold">{q.question}</p>
+                <p className="font-semibold">{q.question} <span className="text-xs font-normal text-muted-foreground">({q.topic})</span></p>
                 <div className={cn(
                   "flex items-center mt-2 text-sm",
                   userAnswers[index] === q.correctAnswer ? "text-green-600" : "text-destructive"

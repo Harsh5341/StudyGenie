@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 
 import { generateStudyGuide, translateContent } from "@/app/actions";
-import type { StudyGuide } from "@/lib/types";
+import type { StudyGuide, QuizCompletionData } from "@/lib/types";
 
 import { Header } from "@/components/app/Header";
 import { MaterialProcessor } from "@/components/app/MaterialProcessor";
@@ -39,6 +39,7 @@ function StudyGenieApp() {
 
   const [quizScore, setQuizScore] = React.useState<number | null>(null);
   const [totalQuestions, setTotalQuestions] = React.useState<number>(0);
+  const [topicPerformance, setTopicPerformance] = React.useState<Record<string, { correct: number; total: number }>>({});
   const [studyStreak, setStudyStreak] = React.useState(0);
 
   React.useEffect(() => {
@@ -79,9 +80,10 @@ function StudyGenieApp() {
     setMaterial(newMaterial);
   };
   
-  const handleQuizComplete = (score: number, total: number) => {
-    setQuizScore(score);
-    setTotalQuestions(total);
+  const handleQuizComplete = (data: QuizCompletionData) => {
+    setQuizScore(data.score);
+    setTotalQuestions(data.totalQuestions);
+    setTopicPerformance(data.topicPerformance);
     
     const now = new Date();
     const lastCompletedStr = localStorage.getItem("lastQuizCompletion");
@@ -141,6 +143,7 @@ function StudyGenieApp() {
                   quizScore={quizScore}
                   totalQuestions={totalQuestions}
                   studyStreak={studyStreak}
+                  topicPerformance={topicPerformance}
                 />
               </TabsContent>
               <TabsContent value="study">
