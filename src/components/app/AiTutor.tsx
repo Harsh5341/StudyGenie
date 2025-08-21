@@ -98,7 +98,7 @@ export function AiTutor({ material }: AiTutorProps) {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={!material ? "Please process your material first." : "Ask a question..."}
+            placeholder={!material ? "Please enter study material first." : "Ask a question..."}
             disabled={isLoading || !material}
           />
           <Button type="submit" disabled={isLoading || !input.trim()}>
