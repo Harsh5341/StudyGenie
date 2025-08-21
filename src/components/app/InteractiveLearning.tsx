@@ -2,16 +2,58 @@
 "use client";
 
 import * as React from "react";
-import type { StudyGuide } from "@/lib/types";
+import type { PracticeProblem, StudyGuide } from "@/lib/types";
 import { Quiz } from "@/components/app/Quiz";
 import { Flashcard } from "@/components/app/Flashcard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 interface InteractiveLearningProps {
   studyGuide: StudyGuide;
 }
+
+function PracticeProblems({ problems }: { problems: PracticeProblem[] }) {
+  if (!problems || problems.length === 0) {
+    return <p className="text-muted-foreground">No practice problems available.</p>;
+  }
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-headline text-2xl">Practice Problems</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Accordion type="single" collapsible className="w-full">
+          {problems.map((item, index) => (
+            <AccordionItem value={`item-${index}`} key={index}>
+              <AccordionTrigger>Problem #{index + 1}</AccordionTrigger>
+              <AccordionContent>
+                <p className="font-semibold mb-4">{item.problem}</p>
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="solution">
+                    <AccordionTrigger className="text-sm">
+                      <span className="flex items-center"><Lightbulb className="mr-2 h-4 w-4" /> View Solution</span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      {item.solution}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export function InteractiveLearning({ studyGuide }: InteractiveLearningProps) {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
@@ -26,10 +68,12 @@ export function InteractiveLearning({ studyGuide }: InteractiveLearningProps) {
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-1 lg:grid-cols-2">
+       <div className="lg:col-span-2">
+        <PracticeProblems problems={studyGuide.practiceProblems} />
+      </div>
       <div className="lg:col-span-2">
         <Quiz questions={studyGuide.quizzes} />
       </div>
-
       <div className="lg:col-span-2">
         <Card>
           <CardContent className="p-6">
