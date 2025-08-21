@@ -31,7 +31,15 @@ const initialState: {
 };
 
 function StudyGenieApp() {
-  const [state, formAction] = useActionState(generateStudyGuide, initialState);
+  const [materialHistory, setMaterialHistory] = React.useState<string[]>([]);
+  const formAction = async (formData: FormData) => {
+    const material = formData.get("material") as string;
+    if (material) {
+        setMaterialHistory(prev => [...prev, material]);
+    }
+    await wrappedFormAction(formData);
+  };
+  const [state, wrappedFormAction] = useActionState(generateStudyGuide, initialState);
   const [material, setMaterial] = React.useState("");
   const { studyGuide: originalStudyGuide } = state;
   const [translatedStudyGuide, setTranslatedStudyGuide] = React.useState<StudyGuide | null>(null);
@@ -160,7 +168,7 @@ function StudyGenieApp() {
                 <InteractiveLearning studyGuide={studyGuide} onQuizComplete={handleQuizComplete} />
               </TabsContent>
               <TabsContent value="history">
-                <HistoryAndMindmap history={conversationHistory} />
+                <HistoryAndMindmap materialHistory={materialHistory} />
               </TabsContent>
             </Tabs>
           ) : !isTranslating && (

@@ -3,17 +3,17 @@
 
 import * as React from "react";
 import { generateMindMap } from "@/app/actions";
-import type { AiTeacherResponse } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Share2, Bot, User } from "lucide-react";
+import { Loader2, Share2, FileText } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 interface HistoryAndMindmapProps {
-  history: AiTeacherResponse[];
+  materialHistory: string[];
 }
 
-export function HistoryAndMindmap({ history }: HistoryAndMindmapProps) {
+export function HistoryAndMindmap({ materialHistory }: HistoryAndMindmapProps) {
   const [mindMap, setMindMap] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -22,7 +22,7 @@ export function HistoryAndMindmap({ history }: HistoryAndMindmapProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await generateMindMap(history);
+      const result = await generateMindMap(materialHistory);
       setMindMap(result.mindMap);
     } catch (err) {
       setError("Failed to generate mind map. Please try again.");
@@ -35,35 +35,32 @@ export function HistoryAndMindmap({ history }: HistoryAndMindmapProps) {
     <div className="grid gap-6 mt-6 md:grid-cols-1 lg:grid-cols-2">
       <Card className="lg:col-span-1">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Conversation History</CardTitle>
-          <CardDescription>Review your past questions and answers.</CardDescription>
+          <CardTitle className="font-headline text-2xl">Study Material History</CardTitle>
+          <CardDescription>Review your past study materials.</CardDescription>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
-            {history.length > 0 ? (
-              <div className="space-y-6">
-                {history.map((item, index) => (
-                  <div key={index} className="space-y-4">
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-muted rounded-full">
-                        <User className="h-6 w-6" />
-                      </div>
-                      <p className="font-semibold bg-muted p-3 rounded-lg">{item.question}</p>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary text-primary-foreground rounded-full">
-                        <Bot className="h-6 w-6" />
-                      </div>
-                      <p className="bg-primary/10 p-3 rounded-lg whitespace-pre-wrap">
-                        {item.answer}
+            {materialHistory.length > 0 ? (
+              <Accordion type="multiple" className="w-full">
+                {materialHistory.map((material, index) => (
+                  <AccordionItem value={`item-${index}`} key={index}>
+                    <AccordionTrigger>
+                      <span className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        Submission #{materialHistory.length - index}
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="whitespace-pre-wrap text-sm text-muted-foreground p-2 bg-muted/50 rounded-md">
+                        {material.substring(0, 300)}...
                       </p>
-                    </div>
-                  </div>
+                    </AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
+              </Accordion>
             ) : (
               <p className="text-muted-foreground text-center py-16">
-                Your conversation history with the AI Teacher will appear here.
+                Your submitted study materials will appear here.
               </p>
             )}
           </ScrollArea>
@@ -72,10 +69,10 @@ export function HistoryAndMindmap({ history }: HistoryAndMindmapProps) {
       <Card className="lg:col-span-1">
         <CardHeader>
           <CardTitle className="font-headline text-2xl">Concept Mind Map</CardTitle>
-          <CardDescription>Visualize the key concepts from your conversation.</CardDescription>
+          <CardDescription>Visualize the key concepts from your study materials.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={handleGenerateMindMap} disabled={isLoading || history.length === 0}>
+          <Button onClick={handleGenerateMindMap} disabled={isLoading || materialHistory.length === 0}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

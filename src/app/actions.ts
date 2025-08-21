@@ -168,9 +168,9 @@ export async function translateContent(
 }
 
 export async function generateMindMap(
-  history: AiTeacherResponse[]
+  materialHistory: string[]
 ): Promise<{ mindMap: string }> {
-  const conversation = history.map(h => `Q: ${h.question}\nA: ${h.answer}`).join('\n\n');
-  const result = await generateMindMapFlow({ conversation });
+  const combinedMaterial = materialHistory.join('\n\n---\n\n');
+  const result = await generateMindMapFlow({ material: combinedMaterial });
   return { mindMap: result.mindMap };
 }
