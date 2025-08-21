@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -11,21 +12,31 @@ import { cn } from "@/lib/utils";
 
 interface QuizProps {
   questions: QuizQuestion[];
+  onQuizComplete: (score: number, totalQuestions: number) => void;
 }
 
-export function Quiz({ questions }: QuizProps) {
+export function Quiz({ questions, onQuizComplete }: QuizProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
   const [userAnswers, setUserAnswers] = React.useState<string[]>([]);
   const [selectedOption, setSelectedOption] = React.useState<string | null>(null);
   const [showResults, setShowResults] = React.useState(false);
 
+  const score = userAnswers.reduce((acc, answer, index) => {
+    return answer === questions[index].correctAnswer ? acc + 1 : acc;
+  }, 0);
+
   const handleNext = () => {
     if (selectedOption) {
-      setUserAnswers(prev => [...prev, selectedOption]);
+      const newUserAnswers = [...userAnswers, selectedOption];
+      setUserAnswers(newUserAnswers);
       setSelectedOption(null);
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
       } else {
+        const finalScore = newUserAnswers.reduce((acc, answer, index) => {
+          return answer === questions[index].correctAnswer ? acc + 1 : acc;
+        }, 0);
+        onQuizComplete(finalScore, questions.length);
         setShowResults(true);
       }
     }
@@ -36,6 +47,7 @@ export function Quiz({ questions }: QuizProps) {
     setUserAnswers([]);
     setSelectedOption(null);
     setShowResults(false);
+    onQuizComplete(0, questions.length);
   };
   
   if (!questions || questions.length === 0) {
@@ -50,10 +62,6 @@ export function Quiz({ questions }: QuizProps) {
       </Card>
     );
   }
-
-  const score = userAnswers.reduce((acc, answer, index) => {
-    return answer === questions[index].correctAnswer ? acc + 1 : acc;
-  }, 0);
 
   if (showResults) {
     return (

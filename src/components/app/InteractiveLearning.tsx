@@ -17,6 +17,7 @@ import {
 
 interface InteractiveLearningProps {
   studyGuide: StudyGuide;
+  onQuizComplete: (score: number, totalQuestions: number) => void;
 }
 
 function PracticeProblems({ problems }: { problems: PracticeProblem[] }) {
@@ -55,7 +56,7 @@ function PracticeProblems({ problems }: { problems: PracticeProblem[] }) {
 }
 
 
-export function InteractiveLearning({ studyGuide }: InteractiveLearningProps) {
+export function InteractiveLearning({ studyGuide, onQuizComplete }: InteractiveLearningProps) {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
   const nextCard = () => {
@@ -72,7 +73,7 @@ export function InteractiveLearning({ studyGuide }: InteractiveLearningProps) {
         <PracticeProblems problems={studyGuide.practiceProblems} />
       </div>
       <div className="lg:col-span-2">
-        <Quiz questions={studyGuide.quizzes} />
+        <Quiz questions={studyGuide.quizzes} onQuizComplete={onQuizComplete} />
       </div>
       <div className="lg:col-span-2">
         <Card>

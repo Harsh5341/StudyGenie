@@ -32,11 +32,18 @@ function StudyGenieApp() {
   const [state, formAction] = useActionState(generateStudyGuide, initialState);
   const [material, setMaterial] = React.useState("");
   const { studyGuide } = state;
+  const [quizScore, setQuizScore] = React.useState<number | null>(null);
+  const [totalQuestions, setTotalQuestions] = React.useState<number>(0);
 
   const handleMaterialChange = (newMaterial: string) => {
     setMaterial(newMaterial);
   };
   
+  const handleQuizComplete = (score: number, total: number) => {
+    setQuizScore(score);
+    setTotalQuestions(total);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -57,13 +64,17 @@ function StudyGenieApp() {
                 <TabsTrigger value="practice"><PencilRuler className="mr-2" />Interactive Learning</TabsTrigger>
               </TabsList>
               <TabsContent value="dashboard">
-                <ProgressDashboard studyGuide={studyGuide} />
+                <ProgressDashboard 
+                  studyGuide={studyGuide}
+                  quizScore={quizScore}
+                  totalQuestions={totalQuestions} 
+                />
               </TabsContent>
               <TabsContent value="study">
                 <StudySession studyGuide={studyGuide} />
               </TabsContent>
               <TabsContent value="practice">
-                <InteractiveLearning studyGuide={studyGuide} />
+                <InteractiveLearning studyGuide={studyGuide} onQuizComplete={handleQuizComplete} />
               </TabsContent>
             </Tabs>
           ) : (

@@ -4,15 +4,22 @@
 import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';
 import { Target, BarChart3, Flame } from "lucide-react";
-import { Skeleton } from "../ui/skeleton";
 
 interface ProgressDashboardProps {
   studyGuide: StudyGuide;
+  quizScore: number | null;
+  totalQuestions: number;
 }
 
-export function ProgressDashboard({ studyGuide }: ProgressDashboardProps) {
+export function ProgressDashboard({ studyGuide, quizScore, totalQuestions }: ProgressDashboardProps) {
+  const quizData = quizScore !== null ? [
+    { name: 'Score', value: quizScore, total: totalQuestions },
+  ] : [];
+
+  const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
+
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
       <Card className="lg:col-span-3">
@@ -45,8 +52,32 @@ export function ProgressDashboard({ studyGuide }: ProgressDashboardProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[200px] flex items-center justify-center">
-            <p className="text-muted-foreground">Take a quiz to see your performance.</p>
+          <div className="h-[200px]">
+            {quizScore !== null ? (
+               <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={quizData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" domain={[0, totalQuestions]} ticks={[0, totalQuestions/2, totalQuestions]} />
+                  <YAxis type="category" dataKey="name" hide />
+                  <Tooltip 
+                    formatter={(value, name, props) => [`${value}/${props.payload.total}`, "Score"]}
+                  />
+                  <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
+                     <Label 
+                        content={({ value, x, y, width, height }) => 
+                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                            {`${Math.round(percentage)}%`}
+                          </text>
+                        }
+                      />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Take a quiz to see your performance.</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
