@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookText, Bot, BrainCircuit, Sparkles, PencilRuler } from "lucide-react";
+import { InteractiveLearning } from "@/components/app/InteractiveLearning";
 
 const initialState: {
   studyGuide: StudyGuide | null;
@@ -58,7 +59,7 @@ export default function Home() {
                 <AiTutor material={material} />
               </TabsContent>
               <TabsContent value="practice">
-                <StudySession studyGuide={studyGuide} />
+                <InteractiveLearning studyGuide={studyGuide} />
               </TabsContent>
             </Tabs>
           ) : (
