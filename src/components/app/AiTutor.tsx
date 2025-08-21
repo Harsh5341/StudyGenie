@@ -98,14 +98,13 @@ export function AiTutor({ material }: AiTutorProps) {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question..."
+            placeholder={!material ? "Please process your material first." : "Ask a question..."}
             disabled={isLoading || !material}
           />
           <Button type="submit" disabled={isLoading || !input.trim()}>
             <Send className="h-4 w-4" />
           </Button>
         </form>
-        {!material && <p className="text-xs text-muted-foreground mt-2">Please process some material first to activate the tutor.</p>}
       </CardContent>
     </Card>
   );
