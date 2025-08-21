@@ -30,6 +30,8 @@ export function HistoryAndMindmap({ materialHistory }: HistoryAndMindmapProps) {
       setIsLoading(false);
     }
   };
+  
+  const reversedHistory = React.useMemo(() => [...materialHistory].reverse(), [materialHistory]);
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-1 lg:grid-cols-2">
@@ -40,14 +42,14 @@ export function HistoryAndMindmap({ materialHistory }: HistoryAndMindmapProps) {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
-            {materialHistory.length > 0 ? (
+            {reversedHistory.length > 0 ? (
               <Accordion type="multiple" className="w-full">
-                {materialHistory.map((material, index) => (
+                {reversedHistory.map((material, index) => (
                   <AccordionItem value={`item-${index}`} key={index}>
                     <AccordionTrigger>
                       <span className="flex items-center gap-2">
                         <FileText className="h-4 w-4" />
-                        Submission #{materialHistory.length - index}
+                        Submission #{index + 1}
                       </span>
                     </AccordionTrigger>
                     <AccordionContent>
