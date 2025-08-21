@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import { generateStudyGuide } from "@/app/actions";
 import type { StudyGuide } from "@/lib/types";
@@ -25,7 +25,7 @@ const initialState: {
 };
 
 export default function Home() {
-  const [state, formAction] = useFormState(generateStudyGuide, initialState);
+  const [state, formAction] = useActionState(generateStudyGuide, initialState);
   const [material, setMaterial] = React.useState("");
   const { studyGuide } = state;
 
