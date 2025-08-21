@@ -1,4 +1,4 @@
-import { BrainCircuit, Globe, LogOut } from "lucide-react";
+import { BrainCircuit, Globe, LogOut, Moon, Sun } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
@@ -17,11 +17,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
+import { useTheme } from "@/hooks/use-theme";
 import { Button } from "../ui/button";
 
 export function Header() {
   const { user, signOut } = useAuth();
   const { language, setLanguage, getTranslation } = useLanguage();
+  const { theme, setTheme } = useTheme();
 
   return (
     <header className="bg-card border-b sticky top-0 z-10">
@@ -34,6 +36,15 @@ export function Header() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              aria-label="Toggle theme"
+            >
+              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            </Button>
             <Select value={language} onValueChange={setLanguage}>
               <SelectTrigger className="w-auto gap-2" aria-label="Select Language">
                 <Globe className="h-4 w-4" />
