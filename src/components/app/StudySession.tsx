@@ -1,0 +1,62 @@
+"use client";
+
+import * as React from "react";
+import type { StudyGuide } from "@/lib/types";
+import { Quiz } from "@/components/app/Quiz";
+import { Flashcard } from "@/components/app/Flashcard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+interface StudySessionProps {
+  studyGuide: StudyGuide;
+}
+
+export function StudySession({ studyGuide }: StudySessionProps) {
+  const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
+
+  const nextCard = () => {
+    setCurrentCardIndex((prev) => (prev + 1) % studyGuide.flashcards.length);
+  };
+
+  const prevCard = () => {
+    setCurrentCardIndex((prev) => (prev - 1 + studyGuide.flashcards.length) % studyGuide.flashcards.length);
+  };
+
+  return (
+    <div className="grid gap-6 mt-6 md:grid-cols-1 lg:grid-cols-2">
+      <div className="lg:col-span-2">
+        <Quiz questions={studyGuide.quizzes} />
+      </div>
+
+      <div className="lg:col-span-2">
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-2xl font-bold mb-4 font-headline">Flashcards</h2>
+            {studyGuide.flashcards.length > 0 ? (
+              <div>
+                <Flashcard
+                  front={studyGuide.flashcards[currentCardIndex].front}
+                  back={studyGuide.flashcards[currentCardIndex].back}
+                />
+                <div className="flex items-center justify-between mt-4">
+                  <Button variant="outline" onClick={prevCard}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Previous
+                  </Button>
+                  <div className="text-sm text-muted-foreground">
+                    Card {currentCardIndex + 1} of {studyGuide.flashcards.length}
+                  </div>
+                  <Button variant="outline" onClick={nextCard}>
+                    Next <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No flashcards available.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
