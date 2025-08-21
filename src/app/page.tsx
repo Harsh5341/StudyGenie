@@ -11,11 +11,10 @@ import { Header } from "@/components/app/Header";
 import { MaterialProcessor } from "@/components/app/MaterialProcessor";
 import { ProgressDashboard } from "@/components/app/ProgressDashboard";
 import { StudySession } from "@/components/app/StudySession";
-import { AiTutor } from "@/components/app/AiTutor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookText, Bot, BrainCircuit, Sparkles, PencilRuler } from "lucide-react";
+import { BookText, BrainCircuit, Sparkles, PencilRuler } from "lucide-react";
 import { InteractiveLearning } from "@/components/app/InteractiveLearning";
 
 const initialState: {
@@ -28,7 +27,6 @@ const initialState: {
 
 export default function Home() {
   const [state, formAction] = useActionState(generateStudyGuide, initialState);
-  const [material, setMaterial] = React.useState("");
   const { studyGuide } = state;
 
   return (
@@ -38,15 +36,13 @@ export default function Home() {
         <div className="grid gap-8">
           <MaterialProcessor
             formAction={formAction}
-            onMaterialChange={setMaterial}
           />
 
           {studyGuide ? (
             <Tabs defaultValue="dashboard" className="w-full">
-              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-4">
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
                 <TabsTrigger value="dashboard"><BrainCircuit className="mr-2" />Dashboard</TabsTrigger>
                 <TabsTrigger value="study"><Sparkles className="mr-2" />Study Session</TabsTrigger>
-                <TabsTrigger value="tutor"><Bot className="mr-2" />AI Tutor</TabsTrigger>
                 <TabsTrigger value="practice"><PencilRuler className="mr-2" />Interactive Learning</TabsTrigger>
               </TabsList>
               <TabsContent value="dashboard">
@@ -54,9 +50,6 @@ export default function Home() {
               </TabsContent>
               <TabsContent value="study">
                 <StudySession studyGuide={studyGuide} />
-              </TabsContent>
-              <TabsContent value="tutor">
-                <AiTutor material={material} />
               </TabsContent>
               <TabsContent value="practice">
                 <InteractiveLearning studyGuide={studyGuide} />
