@@ -3,6 +3,8 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
 
 import { generateStudyGuide } from "@/app/actions";
 import type { StudyGuide } from "@/lib/types";
@@ -14,7 +16,7 @@ import { StudySession } from "@/components/app/StudySession";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookText, BrainCircuit, Sparkles, PencilRuler } from "lucide-react";
+import { BookText, BrainCircuit, Sparkles, PencilRuler, Loader2 } from "lucide-react";
 import { InteractiveLearning } from "@/components/app/InteractiveLearning";
 import { AiTeacher } from "@/components/app/AiTeacher";
 
@@ -26,7 +28,7 @@ const initialState: {
   error: null,
 };
 
-export default function Home() {
+function StudyGenieApp() {
   const [state, formAction] = useActionState(generateStudyGuide, initialState);
   const [material, setMaterial] = React.useState("");
   const { studyGuide } = state;
@@ -90,4 +92,25 @@ export default function Home() {
       </main>
     </div>
   );
+}
+
+export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  if (loading || !user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return <StudyGenieApp />;
 }
