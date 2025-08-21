@@ -5,8 +5,9 @@ import * as React from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
+import { useLanguage } from "@/hooks/use-language";
 
-import { generateStudyGuide } from "@/app/actions";
+import { generateStudyGuide, translateContent } from "@/app/actions";
 import type { StudyGuide } from "@/lib/types";
 
 import { Header } from "@/components/app/Header";
@@ -31,7 +32,11 @@ const initialState: {
 function StudyGenieApp() {
   const [state, formAction] = useActionState(generateStudyGuide, initialState);
   const [material, setMaterial] = React.useState("");
-  const { studyGuide } = state;
+  const { studyGuide: originalStudyGuide } = state;
+  const [translatedStudyGuide, setTranslatedStudyGuide] = React.useState<StudyGuide | null>(null);
+  const { language } = useLanguage();
+  const [isTranslating, setIsTranslating] = React.useState(false);
+
   const [quizScore, setQuizScore] = React.useState<number | null>(null);
   const [totalQuestions, setTotalQuestions] = React.useState<number>(0);
   const [studyStreak, setStudyStreak] = React.useState(0);
@@ -54,6 +59,21 @@ function StudyGenieApp() {
       }
     }
   }, []);
+
+  React.useEffect(() => {
+    if (originalStudyGuide) {
+      if (language === 'en') {
+        setTranslatedStudyGuide(originalStudyGuide);
+      } else {
+        setIsTranslating(true);
+        translateContent(originalStudyGuide, language)
+          .then(setTranslatedStudyGuide)
+          .finally(() => setIsTranslating(false));
+      }
+    } else {
+      setTranslatedStudyGuide(null);
+    }
+  }, [originalStudyGuide, language]);
 
   const handleMaterialChange = (newMaterial: string) => {
     setMaterial(newMaterial);
@@ -85,6 +105,8 @@ function StudyGenieApp() {
     }
   };
 
+  const studyGuide = translatedStudyGuide;
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -97,7 +119,16 @@ function StudyGenieApp() {
 
           {material && <AiTeacher material={material} />}
 
-          {studyGuide ? (
+          {isTranslating && (
+             <Card>
+              <CardContent className="p-6 flex items-center justify-center">
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  <p className="text-lg">Translating your study guide...</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {!isTranslating && studyGuide ? (
             <Tabs defaultValue="dashboard" className="w-full">
               <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
                 <TabsTrigger value="dashboard"><BrainCircuit className="mr-2" />Dashboard</TabsTrigger>
@@ -119,7 +150,7 @@ function StudyGenieApp() {
                 <InteractiveLearning studyGuide={studyGuide} onQuizComplete={handleQuizComplete} />
               </TabsContent>
             </Tabs>
-          ) : (
+          ) : !isTranslating && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">

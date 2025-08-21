@@ -6,6 +6,7 @@ import { generateInteractiveQuizzes } from "@/ai/flows/generate-quizzes";
 import { personalizeStudyPlan } from "@/ai/flows/personalize-study-plan";
 import { generatePracticeProblems } from "@/ai/flows/generate-practice-problems";
 import { askAiTeacher } from "@/ai/flows/ask-ai-teacher";
+import { translateText } from "@/ai/flows/translate-text";
 
 import type { QuizQuestion, StudyGuide, Flashcard, PracticeProblem, AiTeacherResponse } from "@/lib/types";
 
@@ -130,5 +131,65 @@ export async function askTeacher(
       response: null,
       error: "The AI Teacher had trouble answering. Please try again.",
     };
+  }
+}
+
+export async function translateContent(
+  content: StudyGuide,
+  language: string
+): Promise<StudyGuide> {
+  if (language === 'en') {
+    return content;
+  }
+
+  try {
+    const translate = async (text: string) => {
+      if (!text) return "";
+      const result = await translateText({ text, targetLanguage: language });
+      return result.translation;
+    };
+    
+    const translatedSummary = await translate(content.summary);
+    const translatedStudyPlan = await translate(content.studyPlan);
+
+    const translatedQuizzes = await Promise.all(
+      content.quizzes.map(async (q) => {
+        const translatedQuestion = await translate(q.question);
+        const translatedOptions = await Promise.all(q.options.map(translate));
+        const translatedCorrectAnswer = await translate(q.correctAnswer);
+        return {
+          ...q,
+          question: translatedQuestion,
+          options: translatedOptions,
+          correctAnswer: translatedCorrectAnswer,
+        };
+      })
+    );
+
+    const translatedFlashcards = await Promise.all(
+      content.flashcards.map(async (f) => ({
+        front: await translate(f.front),
+        back: await translate(f.back),
+      }))
+    );
+
+    const translatedPracticeProblems = await Promise.all(
+      content.practiceProblems.map(async (p) => ({
+        problem: await translate(p.problem),
+        solution: await translate(p.solution),
+      }))
+    );
+
+    return {
+      summary: translatedSummary,
+      studyPlan: translatedStudyPlan,
+      quizzes: translatedQuizzes,
+      flashcards: translatedFlashcards,
+      practiceProblems: translatedPracticeProblems,
+    };
+  } catch (error) {
+    console.error("Translation failed", error);
+    // Return original content if translation fails
+    return content;
   }
 }

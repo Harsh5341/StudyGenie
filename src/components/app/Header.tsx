@@ -16,10 +16,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { useLanguage } from "@/hooks/use-language";
 import { Button } from "../ui/button";
 
 export function Header() {
   const { user, signOut } = useAuth();
+  const { language, setLanguage, getTranslation } = useLanguage();
 
   return (
     <header className="bg-card border-b sticky top-0 z-10">
@@ -28,11 +30,11 @@ export function Header() {
           <div className="flex items-center gap-3">
             <BrainCircuit className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold font-headline text-primary">
-              StudyGenie
+              {getTranslation("header.title")}
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <Select defaultValue="en">
+            <Select value={language} onValueChange={setLanguage}>
               <SelectTrigger className="w-auto gap-2" aria-label="Select Language">
                 <Globe className="h-4 w-4" />
                 <SelectValue placeholder="Language" />
@@ -65,7 +67,7 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <span>{getTranslation("header.logout")}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
