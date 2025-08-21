@@ -37,6 +37,7 @@ export async function generateStudyGuide(
   prevState: { studyGuide: StudyGuide | null; error?: string | null },
   formData: FormData
 ) {
+  "use server";
   const material = formData.get("material") as string;
   if (!material || material.trim().length < 50) {
     return {
