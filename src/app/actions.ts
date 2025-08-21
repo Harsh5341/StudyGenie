@@ -53,13 +53,13 @@ export async function generateStudyGuide(
       generateSummary({ lectureNotes: material }),
       generateInteractiveQuizzes({
         learningMaterial: material,
-        numberOfQuestions: 5,
+        numberOfQuestions: 10,
       }),
       personalizeStudyPlan({
         studentId: "user-123",
         learningMaterials: material,
-        quizScores: [0.5, 0.7, 0.6], // Mock data for initial plan
-        flashcardPerformance: [0.8, 0.6, 0.9], // Mock data for initial plan
+        quizScores: [], 
+        flashcardPerformance: [],
       }),
       generatePracticeProblems({
         learningMaterial: material,
