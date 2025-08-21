@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 
 import { generateStudyGuide, translateContent } from "@/app/actions";
-import type { StudyGuide, QuizCompletionData } from "@/lib/types";
+import type { StudyGuide, QuizCompletionData, AiTeacherResponse } from "@/lib/types";
 
 import { Header } from "@/components/app/Header";
 import { MaterialProcessor } from "@/components/app/MaterialProcessor";
@@ -17,9 +17,10 @@ import { StudySession } from "@/components/app/StudySession";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookText, BrainCircuit, Sparkles, PencilRuler, Loader2 } from "lucide-react";
+import { BookText, BrainCircuit, Sparkles, PencilRuler, Loader2, History } from "lucide-react";
 import { InteractiveLearning } from "@/components/app/InteractiveLearning";
 import { AiTeacher } from "@/components/app/AiTeacher";
+import { HistoryAndMindmap } from "@/components/app/HistoryAndMindmap";
 
 const initialState: {
   studyGuide: StudyGuide | null;
@@ -41,6 +42,7 @@ function StudyGenieApp() {
   const [totalQuestions, setTotalQuestions] = React.useState<number>(0);
   const [topicPerformance, setTopicPerformance] = React.useState<Record<string, { correct: number; total: number }>>({});
   const [studyStreak, setStudyStreak] = React.useState(0);
+  const [conversationHistory, setConversationHistory] = React.useState<AiTeacherResponse[]>([]);
 
   React.useEffect(() => {
     const storedStreak = localStorage.getItem("studyStreak");
@@ -107,6 +109,10 @@ function StudyGenieApp() {
     }
   };
 
+  const handleNewAnswer = (response: AiTeacherResponse) => {
+    setConversationHistory(prev => [...prev, response]);
+  }
+
   const studyGuide = translatedStudyGuide;
 
   return (
@@ -119,7 +125,7 @@ function StudyGenieApp() {
             onMaterialChange={handleMaterialChange}
           />
 
-          {material && <AiTeacher material={material} />}
+          {material && <AiTeacher material={material} onNewAnswer={handleNewAnswer} />}
 
           {isTranslating && (
              <Card>
@@ -132,10 +138,11 @@ function StudyGenieApp() {
 
           {!isTranslating && studyGuide ? (
             <Tabs defaultValue="dashboard" className="w-full">
-              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-4">
                 <TabsTrigger value="dashboard"><BrainCircuit className="mr-2" />Dashboard</TabsTrigger>
                 <TabsTrigger value="study"><Sparkles className="mr-2" />Study Session</TabsTrigger>
                 <TabsTrigger value="practice"><PencilRuler className="mr-2" />Interactive Learning</TabsTrigger>
+                <TabsTrigger value="history"><History className="mr-2" />History & Mind Map</TabsTrigger>
               </TabsList>
               <TabsContent value="dashboard">
                 <ProgressDashboard 
@@ -151,6 +158,9 @@ function StudyGenieApp() {
               </TabsContent>
               <TabsContent value="practice">
                 <InteractiveLearning studyGuide={studyGuide} onQuizComplete={handleQuizComplete} />
+              </TabsContent>
+              <TabsContent value="history">
+                <HistoryAndMindmap history={conversationHistory} />
               </TabsContent>
             </Tabs>
           ) : !isTranslating && (

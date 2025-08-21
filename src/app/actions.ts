@@ -7,6 +7,7 @@ import { personalizeStudyPlan } from "@/ai/flows/personalize-study-plan";
 import { generatePracticeProblems } from "@/ai/flows/generate-practice-problems";
 import { askAiTeacher } from "@/ai/flows/ask-ai-teacher";
 import { translateText } from "@/ai/flows/translate-text";
+import { generateMindMap as generateMindMapFlow } from "@/ai/flows/generate-mind-map";
 
 import type { QuizQuestion, StudyGuide, Flashcard, PracticeProblem, AiTeacherResponse } from "@/lib/types";
 
@@ -164,4 +165,12 @@ export async function translateContent(
     // Return original content if translation fails
     return content;
   }
+}
+
+export async function generateMindMap(
+  history: AiTeacherResponse[]
+): Promise<{ mindMap: string }> {
+  const conversation = history.map(h => `Q: ${h.question}\nA: ${h.answer}`).join('\n\n');
+  const result = await generateMindMapFlow({ conversation });
+  return { mindMap: result.mindMap };
 }

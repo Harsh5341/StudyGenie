@@ -12,6 +12,7 @@ import { User, Bot, Loader2 } from "lucide-react";
 
 interface AiTeacherProps {
   material: string;
+  onNewAnswer: (response: AiTeacherResponse) => void;
 }
 
 const initialState: {
@@ -38,14 +39,15 @@ function SubmitButton() {
   );
 }
 
-export function AiTeacher({ material }: AiTeacherProps) {
+export function AiTeacher({ material, onNewAnswer }: AiTeacherProps) {
   const [state, setState] = React.useState(initialState);
   const formRef = React.useRef<HTMLFormElement>(null);
 
   const handleAction = async (formData: FormData) => {
     const result = await askTeacher(initialState, formData);
     setState(result);
-    if (result.response || result.error) {
+    if (result.response) {
+      onNewAnswer(result.response);
       formRef.current?.reset();
     }
   };
