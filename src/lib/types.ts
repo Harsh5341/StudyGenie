@@ -1,3 +1,4 @@
+
 export interface QuizQuestion {
   question: string;
   options: string[];
@@ -8,7 +9,12 @@ export interface QuizQuestion {
 
 export interface Flashcard {
   front: string;
-  back: string;
+  back:string;
+}
+
+export interface PracticeProblem {
+    problem: string;
+    solution: string;
 }
 
 export interface StudyGuide {
@@ -16,6 +22,7 @@ export interface StudyGuide {
   quizzes: QuizQuestion[];
   flashcards: Flashcard[];
   studyPlan: string;
+  practiceProblems: PracticeProblem[];
 }
 
 export interface Message {

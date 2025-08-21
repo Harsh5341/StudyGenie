@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -14,7 +15,7 @@ import { AiTutor } from "@/components/app/AiTutor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookText, Bot, BrainCircuit, Sparkles } from "lucide-react";
+import { BookText, Bot, BrainCircuit, Sparkles, PencilRuler } from "lucide-react";
 
 const initialState: {
   studyGuide: StudyGuide | null;
@@ -41,10 +42,11 @@ export default function Home() {
 
           {studyGuide ? (
             <Tabs defaultValue="dashboard" className="w-full">
-              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-4">
                 <TabsTrigger value="dashboard"><BrainCircuit className="mr-2" />Dashboard</TabsTrigger>
                 <TabsTrigger value="study"><Sparkles className="mr-2" />Study Session</TabsTrigger>
                 <TabsTrigger value="tutor"><Bot className="mr-2" />AI Tutor</TabsTrigger>
+                <TabsTrigger value="practice"><PencilRuler className="mr-2" />Interactive Learning</TabsTrigger>
               </TabsList>
               <TabsContent value="dashboard">
                 <ProgressDashboard studyGuide={studyGuide} />
@@ -54,6 +56,9 @@ export default function Home() {
               </TabsContent>
               <TabsContent value="tutor">
                 <AiTutor material={material} />
+              </TabsContent>
+              <TabsContent value="practice">
+                <StudySession studyGuide={studyGuide} />
               </TabsContent>
             </Tabs>
           ) : (
