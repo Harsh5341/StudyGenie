@@ -30,3 +30,8 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
+
+export interface AiTeacherResponse {
+  question: string;
+  answer: string;
+}

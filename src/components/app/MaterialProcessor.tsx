@@ -28,9 +28,10 @@ function SubmitButton() {
 
 interface MaterialProcessorProps {
   formAction: (payload: FormData) => void;
+  onMaterialChange: (newMaterial: string) => void;
 }
 
-export function MaterialProcessor({ formAction }: MaterialProcessorProps) {
+export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProcessorProps) {
   return (
     <Card>
       <CardHeader>
@@ -52,6 +53,7 @@ export function MaterialProcessor({ formAction }: MaterialProcessorProps) {
               placeholder="Paste your content here..."
               className="min-h-[150px] text-base"
               required
+              onChange={(e) => onMaterialChange(e.target.value)}
             />
           </div>
           <div className="flex justify-end">

@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookText, BrainCircuit, Sparkles, PencilRuler } from "lucide-react";
 import { InteractiveLearning } from "@/components/app/InteractiveLearning";
+import { AiTeacher } from "@/components/app/AiTeacher";
 
 const initialState: {
   studyGuide: StudyGuide | null;
@@ -27,8 +28,13 @@ const initialState: {
 
 export default function Home() {
   const [state, formAction] = useActionState(generateStudyGuide, initialState);
+  const [material, setMaterial] = React.useState("");
   const { studyGuide } = state;
 
+  const handleMaterialChange = (newMaterial: string) => {
+    setMaterial(newMaterial);
+  };
+  
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -36,7 +42,10 @@ export default function Home() {
         <div className="grid gap-8">
           <MaterialProcessor
             formAction={formAction}
+            onMaterialChange={handleMaterialChange}
           />
+
+          {material && <AiTeacher material={material} />}
 
           {studyGuide ? (
             <Tabs defaultValue="dashboard" className="w-full">
