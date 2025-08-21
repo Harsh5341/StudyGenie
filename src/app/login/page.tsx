@@ -118,7 +118,7 @@ export default function LoginPage() {
       <div className="flex flex-col items-center gap-4 p-8 -mt-20 text-center">
         <div className="flex items-center gap-3">
           <BrainCircuit className="h-12 w-12 text-primary" />
-          <h1 className="text-5xl font-bold font-headline text-primary">
+          <h1 className="text-6xl font-bold font-logo text-primary">
             StudyGenie
           </h1>
         </div>
