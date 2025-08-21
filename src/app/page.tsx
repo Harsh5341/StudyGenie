@@ -34,6 +34,26 @@ function StudyGenieApp() {
   const { studyGuide } = state;
   const [quizScore, setQuizScore] = React.useState<number | null>(null);
   const [totalQuestions, setTotalQuestions] = React.useState<number>(0);
+  const [studyStreak, setStudyStreak] = React.useState(0);
+
+  React.useEffect(() => {
+    const storedStreak = localStorage.getItem("studyStreak");
+    const lastCompleted = localStorage.getItem("lastQuizCompletion");
+
+    if (storedStreak) {
+      setStudyStreak(Number(storedStreak));
+    }
+    
+    if (lastCompleted) {
+      const lastDate = new Date(lastCompleted);
+      const now = new Date();
+      // Reset streak if it's been more than 48 hours (to allow for a full 24h grace period)
+      if (now.getTime() - lastDate.getTime() > 48 * 60 * 60 * 1000) {
+        setStudyStreak(0);
+        localStorage.setItem("studyStreak", "0");
+      }
+    }
+  }, []);
 
   const handleMaterialChange = (newMaterial: string) => {
     setMaterial(newMaterial);
@@ -42,6 +62,27 @@ function StudyGenieApp() {
   const handleQuizComplete = (score: number, total: number) => {
     setQuizScore(score);
     setTotalQuestions(total);
+    
+    const now = new Date();
+    const lastCompletedStr = localStorage.getItem("lastQuizCompletion");
+    
+    if (lastCompletedStr) {
+      const lastCompletedDate = new Date(lastCompletedStr);
+      // Check if 24 hours have passed
+      if (now.getTime() - lastCompletedDate.getTime() >= 24 * 60 * 60 * 1000) {
+         setStudyStreak(prev => {
+          const newStreak = prev + 1;
+          localStorage.setItem("studyStreak", String(newStreak));
+          localStorage.setItem("lastQuizCompletion", now.toISOString());
+          return newStreak;
+        });
+      }
+    } else {
+      // First quiz ever
+      setStudyStreak(1);
+      localStorage.setItem("studyStreak", "1");
+      localStorage.setItem("lastQuizCompletion", now.toISOString());
+    }
   };
 
   return (
@@ -67,7 +108,8 @@ function StudyGenieApp() {
                 <ProgressDashboard 
                   studyGuide={studyGuide}
                   quizScore={quizScore}
-                  totalQuestions={totalQuestions} 
+                  totalQuestions={totalQuestions}
+                  studyStreak={studyStreak}
                 />
               </TabsContent>
               <TabsContent value="study">

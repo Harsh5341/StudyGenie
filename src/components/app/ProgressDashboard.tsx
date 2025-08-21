@@ -11,9 +11,10 @@ interface ProgressDashboardProps {
   studyGuide: StudyGuide;
   quizScore: number | null;
   totalQuestions: number;
+  studyStreak: number;
 }
 
-export function ProgressDashboard({ studyGuide, quizScore, totalQuestions }: ProgressDashboardProps) {
+export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak }: ProgressDashboardProps) {
   const quizData = quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
   ] : [];
@@ -90,7 +91,7 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions }: Pro
           </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center">
-          <div className="text-6xl font-bold font-headline">0</div>
+          <div className="text-6xl font-bold font-headline">{studyStreak}</div>
           <div className="ml-2 text-muted-foreground">days</div>
         </CardContent>
       </Card>
