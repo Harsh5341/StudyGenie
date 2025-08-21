@@ -1,7 +1,8 @@
+
 "use client";
 
 import * as React from "react";
-import { useFormStatus, useActionState } from "react-dom";
+import { useFormStatus } from "react-dom";
 import { askTeacher } from "@/app/actions";
 import type { AiTeacherResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -38,14 +39,16 @@ function SubmitButton() {
 }
 
 export function AiTeacher({ material }: AiTeacherProps) {
-  const [state, formAction] = useActionState(askTeacher, initialState);
+  const [state, setState] = React.useState(initialState);
   const formRef = React.useRef<HTMLFormElement>(null);
 
-  React.useEffect(() => {
-    if (state.response || state.error) {
+  const handleAction = async (formData: FormData) => {
+    const result = await askTeacher(initialState, formData);
+    setState(result);
+    if (result.response || result.error) {
       formRef.current?.reset();
     }
-  }, [state]);
+  };
 
   return (
     <Card>
@@ -58,7 +61,7 @@ export function AiTeacher({ material }: AiTeacherProps) {
       <CardContent className="space-y-4">
         <form
           ref={formRef}
-          action={formAction}
+          action={handleAction}
           className="flex items-center gap-2"
         >
           <Input
