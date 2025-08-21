@@ -5,7 +5,7 @@ import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label, Cell } from 'recharts';
-import { Target, BarChart3, Flame, Map } from "lucide-react";
+import { Target, BarChart3, Flame, Map, PieChart } from "lucide-react";
 
 interface ProgressDashboardProps {
   studyGuide: StudyGuide;
@@ -49,11 +49,14 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
       
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline text-lg">Overall Progress</CardTitle>
+           <CardTitle className="font-headline text-lg flex items-center">
+            <PieChart className="mr-2" />
+            Overall Progress
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <Progress value={0} className="w-full" />
-          <p className="text-center mt-2 text-muted-foreground">0% Complete</p>
+          <Progress value={percentage} className="w-full" />
+          <p className="text-center mt-2 text-muted-foreground">{Math.round(percentage)}% Complete</p>
         </CardContent>
       </Card>
 
