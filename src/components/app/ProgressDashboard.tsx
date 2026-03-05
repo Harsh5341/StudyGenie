@@ -80,8 +80,8 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   />
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
-                        content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                        content={({ value, x, y, width, height }: any) =>
+                          <text x={(x as number) + (width as number) / 2} y={(y as number) + (height as number) / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
                             {`${Math.round(percentage)}%`}
                           </text>
                         }

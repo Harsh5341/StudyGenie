@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useFormStatus } from "react-dom";
 import { Upload, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,34 @@ interface MaterialProcessorProps {
 }
 
 export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProcessorProps) {
+  // ⚡ Bolt Optimization: Debouncing top-level state changes.
+  // We use a 300ms debounce timeout to prevent the textarea's `onChange` event from firing on every single keystroke.
+  // Impact: Prevents heavy re-renders of the entire `StudyGenieApp` and its complex children (like Recharts graphs) while typing.
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        onMaterialChange(value);
+      }, 300);
+    },
+    [onMaterialChange]
+  );
+
+  // Clear timeout on unmount to prevent memory leaks
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -53,7 +82,7 @@ export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProc
               placeholder="Paste your content here..."
               className="min-h-[150px] text-base"
               required
-              onChange={(e) => onMaterialChange(e.target.value)}
+              onChange={handleChange}
             />
           </div>
           <div className="flex justify-end">
