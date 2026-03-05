@@ -1,0 +1,3 @@
+## 2024-05-24 - Uncontrolled Textarea inputs causing full-app re-renders
+**Learning:** In a NextJS App Router setup, lifting state up (e.g. `setMaterial` in `page.tsx`) from a `<textarea>` input (`MaterialProcessor`) that gets updated `onChange` on every single keystroke can cause massive performance bottlenecks. This is especially true when sibling components dependent on that state (`StudyGenieApp`) render heavy items like `ProgressDashboard` containing complex Recharts graphs.
+**Action:** Always check if text inputs triggering top-level state changes actually need to reflect immediately. If not, use `useRef` and `setTimeout` (or a library) to debounce the input's `onChange` event, saving hundreds of unnecessary full-app React rendering cycles.
