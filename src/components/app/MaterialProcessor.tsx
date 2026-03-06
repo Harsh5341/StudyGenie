@@ -31,7 +31,9 @@ interface MaterialProcessorProps {
   onMaterialChange: (newMaterial: string) => void;
 }
 
-export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProcessorProps) {
+import * as React from "react";
+
+export const MaterialProcessor = React.memo(function MaterialProcessor({ formAction, onMaterialChange }: MaterialProcessorProps) {
   return (
     <Card>
       <CardHeader>
@@ -63,4 +65,4 @@ export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProc
       </CardContent>
     </Card>
   );
-}
+});

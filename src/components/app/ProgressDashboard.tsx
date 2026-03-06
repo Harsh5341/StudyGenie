@@ -21,7 +21,9 @@ const getProficiencyColor = (percentage: number) => {
   return 'hsl(var(--chart-2))';
 };
 
-export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
+import * as React from "react";
+
+export const ProgressDashboard = React.memo(function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
   const quizData = quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
   ] : [];
@@ -81,7 +83,7 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
                         content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                          <text x={Number(x || 0) + Number(width || 0) / 2} y={Number(y || 0) + Number(height || 0) / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
                             {`${Math.round(percentage)}%`}
                           </text>
                         }
@@ -154,4 +156,4 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
 
     </div>
   );
-}
+});

@@ -32,15 +32,17 @@ const initialState: {
 
 function StudyGenieApp() {
   const [materialHistory, setMaterialHistory] = React.useState<string[]>([]);
-  const formAction = async (formData: FormData) => {
+  const [state, wrappedFormAction] = useActionState(generateStudyGuide, initialState);
+
+  const formAction = React.useCallback(async (formData: FormData) => {
     const material = formData.get("material") as string;
     if (material) {
         setMaterialHistory(prev => [...prev, material]);
     }
     await wrappedFormAction(formData);
-  };
-  const [state, wrappedFormAction] = useActionState(generateStudyGuide, initialState);
+  }, [wrappedFormAction]);
   const [material, setMaterial] = React.useState("");
+  const materialTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const { studyGuide: originalStudyGuide } = state;
   const [translatedStudyGuide, setTranslatedStudyGuide] = React.useState<StudyGuide | null>(null);
   const { language } = useLanguage();
@@ -86,11 +88,19 @@ function StudyGenieApp() {
     }
   }, [originalStudyGuide, language]);
 
-  const handleMaterialChange = (newMaterial: string) => {
-    setMaterial(newMaterial);
-  };
+  const handleMaterialChange = React.useCallback((newMaterial: string) => {
+    // ⚡ Bolt: Debounce the material state update to prevent rendering the entire
+    // application on every single keystroke in the MaterialProcessor textarea
+    if (materialTimeoutRef.current) {
+      clearTimeout(materialTimeoutRef.current);
+    }
+
+    materialTimeoutRef.current = setTimeout(() => {
+      setMaterial(newMaterial);
+    }, 300);
+  }, []);
   
-  const handleQuizComplete = (data: QuizCompletionData) => {
+  const handleQuizComplete = React.useCallback((data: QuizCompletionData) => {
     setQuizScore(data.score);
     setTotalQuestions(data.totalQuestions);
     setTopicPerformance(data.topicPerformance);
@@ -115,11 +125,11 @@ function StudyGenieApp() {
       localStorage.setItem("studyStreak", "1");
       localStorage.setItem("lastQuizCompletion", now.toISOString());
     }
-  };
+  }, []);
 
-  const handleNewAnswer = (response: AiTeacherResponse) => {
+  const handleNewAnswer = React.useCallback((response: AiTeacherResponse) => {
     setConversationHistory(prev => [...prev, response]);
-  }
+  }, []);
 
   const studyGuide = translatedStudyGuide;
 

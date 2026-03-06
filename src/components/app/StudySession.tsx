@@ -19,7 +19,7 @@ interface StudySessionProps {
   studyGuide: StudyGuide;
 }
 
-export function StudySession({ studyGuide }: StudySessionProps) {
+export const StudySession = React.memo(function StudySession({ studyGuide }: StudySessionProps) {
   return (
     <div className="grid gap-6 mt-6">
       <Card className="lg:col-span-3">
@@ -42,4 +42,4 @@ export function StudySession({ studyGuide }: StudySessionProps) {
       </Card>
     </div>
   );
-}
+});

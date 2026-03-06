@@ -15,7 +15,7 @@ interface HistoryAndMindmapProps {
   materialHistory: string[];
 }
 
-export function HistoryAndMindmap({ materialHistory }: HistoryAndMindmapProps) {
+export const HistoryAndMindmap = React.memo(function HistoryAndMindmap({ materialHistory }: HistoryAndMindmapProps) {
   const [mindMap, setMindMap] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -138,4 +138,4 @@ export function HistoryAndMindmap({ materialHistory }: HistoryAndMindmapProps) {
       </Card>
     </div>
   );
-}
+});
