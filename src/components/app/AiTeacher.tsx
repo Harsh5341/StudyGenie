@@ -39,7 +39,7 @@ function SubmitButton() {
   );
 }
 
-export function AiTeacher({ material, onNewAnswer }: AiTeacherProps) {
+export const AiTeacher = React.memo(function AiTeacher({ material, onNewAnswer }: AiTeacherProps) {
   const [state, setState] = React.useState(initialState);
   const formRef = React.useRef<HTMLFormElement>(null);
 
@@ -99,4 +99,4 @@ export function AiTeacher({ material, onNewAnswer }: AiTeacherProps) {
       </CardContent>
     </Card>
   );
-}
+});
