@@ -56,7 +56,7 @@ function PracticeProblems({ problems }: { problems: PracticeProblem[] }) {
 }
 
 
-export function InteractiveLearning({ studyGuide, onQuizComplete }: InteractiveLearningProps) {
+export const InteractiveLearning = React.memo(function InteractiveLearning({ studyGuide, onQuizComplete }: InteractiveLearningProps) {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
   const nextCard = () => {
@@ -105,4 +105,4 @@ export function InteractiveLearning({ studyGuide, onQuizComplete }: InteractiveL
       </div>
     </div>
   );
-}
+});
