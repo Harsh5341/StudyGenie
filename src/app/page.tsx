@@ -86,11 +86,11 @@ function StudyGenieApp() {
     }
   }, [originalStudyGuide, language]);
 
-  const handleMaterialChange = (newMaterial: string) => {
+  const handleMaterialChange = React.useCallback((newMaterial: string) => {
     setMaterial(newMaterial);
-  };
+  }, []);
   
-  const handleQuizComplete = (data: QuizCompletionData) => {
+  const handleQuizComplete = React.useCallback((data: QuizCompletionData) => {
     setQuizScore(data.score);
     setTotalQuestions(data.totalQuestions);
     setTopicPerformance(data.topicPerformance);
@@ -115,11 +115,11 @@ function StudyGenieApp() {
       localStorage.setItem("studyStreak", "1");
       localStorage.setItem("lastQuizCompletion", now.toISOString());
     }
-  };
+  }, []);
 
-  const handleNewAnswer = (response: AiTeacherResponse) => {
+  const handleNewAnswer = React.useCallback((response: AiTeacherResponse) => {
     setConversationHistory(prev => [...prev, response]);
-  }
+  }, []);
 
   const studyGuide = translatedStudyGuide;
 
