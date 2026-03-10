@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { Upload, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,23 @@ interface MaterialProcessorProps {
 }
 
 export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProcessorProps) {
+  // Use a ref to store the timeout ID for debouncing
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMaterialChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+
+    // Clear the previous timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Set a new timeout to delay the onMaterialChange call
+    timeoutRef.current = setTimeout(() => {
+      onMaterialChange(value);
+    }, 500); // 500ms debounce
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -53,7 +71,7 @@ export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProc
               placeholder="Paste your content here..."
               className="min-h-[150px] text-base"
               required
-              onChange={(e) => onMaterialChange(e.target.value)}
+              onChange={handleMaterialChange}
             />
           </div>
           <div className="flex justify-end">

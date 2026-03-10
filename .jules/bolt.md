@@ -1,0 +1,4 @@
+## 2024-03-10 - React Re-renders on Keystrokes
+**Learning:** The entire `StudyGenieApp` component tree (including `MaterialProcessor`, `AiTeacher`, and potentially translation loaders) was re-rendering synchronously on every keystroke in the main `Textarea`. This occurs because the `onMaterialChange` prop (which lifts state to the parent component) was being called in the native `onChange` handler of the text area. The component was behaving as a controlled component implicitly by lifting state, even if the textarea itself was uncontrolled internally.
+
+**Action:** Always implement debouncing (using `useRef` and `setTimeout`) when lifting raw text input state to a high-level parent component, especially if that parent coordinates complex UI or AI chat interactions. Also, use `ReturnType<typeof setTimeout>` rather than `NodeJS.Timeout` for the ref type to ensure compatibility across client-side React code.
