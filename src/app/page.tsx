@@ -41,6 +41,15 @@ function StudyGenieApp() {
   };
   const [state, wrappedFormAction] = useActionState(generateStudyGuide, initialState);
   const [material, setMaterial] = React.useState("");
+  const materialTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (materialTimeoutRef.current) {
+        clearTimeout(materialTimeoutRef.current);
+      }
+    };
+  }, []);
   const { studyGuide: originalStudyGuide } = state;
   const [translatedStudyGuide, setTranslatedStudyGuide] = React.useState<StudyGuide | null>(null);
   const { language } = useLanguage();
@@ -87,7 +96,15 @@ function StudyGenieApp() {
   }, [originalStudyGuide, language]);
 
   const handleMaterialChange = (newMaterial: string) => {
-    setMaterial(newMaterial);
+    // ⚡ Bolt: Debouncing material state updates to prevent the entire page component
+    // (and all children) from re-rendering synchronously on every keystroke.
+    // Reduces re-renders from O(keystrokes) to O(1) per typing burst.
+    if (materialTimeoutRef.current) {
+      clearTimeout(materialTimeoutRef.current);
+    }
+    materialTimeoutRef.current = setTimeout(() => {
+      setMaterial(newMaterial);
+    }, 500);
   };
   
   const handleQuizComplete = (data: QuizCompletionData) => {
