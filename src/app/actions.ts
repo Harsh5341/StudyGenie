@@ -120,38 +120,46 @@ export async function translateContent(
       return result.translation;
     };
     
-    const translatedSummary = await translate(content.summary);
-    const translatedStudyPlan = await translate(content.studyPlan);
-
-    const translatedQuizzes = await Promise.all(
-      content.quizzes.map(async (q) => {
-        const translatedQuestion = await translate(q.question);
-        const translatedOptions = await Promise.all(q.options.map(translate));
-        const translatedCorrectAnswer = await translate(q.correctAnswer);
-        const translatedTopic = await translate(q.topic);
-        return {
-          ...q,
-          question: translatedQuestion,
-          options: translatedOptions,
-          correctAnswer: translatedCorrectAnswer,
-          topic: translatedTopic,
-        };
-      })
-    );
-
-    const translatedFlashcards = await Promise.all(
-      content.flashcards.map(async (f) => ({
-        front: await translate(f.front),
-        back: await translate(f.back),
-      }))
-    );
-
-    const translatedPracticeProblems = await Promise.all(
-      content.practiceProblems.map(async (p) => ({
-        problem: await translate(p.problem),
-        solution: await translate(p.solution),
-      }))
-    );
+    // Performance optimization: parallelize all top-level and nested translations
+    const [
+      translatedSummary,
+      translatedStudyPlan,
+      translatedQuizzes,
+      translatedFlashcards,
+      translatedPracticeProblems
+    ] = await Promise.all([
+      translate(content.summary),
+      translate(content.studyPlan),
+      Promise.all(
+        content.quizzes.map(async (q) => {
+          const [question, options, correctAnswer, topic] = await Promise.all([
+            translate(q.question),
+            Promise.all(q.options.map(translate)),
+            translate(q.correctAnswer),
+            translate(q.topic),
+          ]);
+          return {
+            ...q,
+            question,
+            options,
+            correctAnswer,
+            topic,
+          };
+        })
+      ),
+      Promise.all(
+        content.flashcards.map(async (f) => {
+          const [front, back] = await Promise.all([translate(f.front), translate(f.back)]);
+          return { front, back };
+        })
+      ),
+      Promise.all(
+        content.practiceProblems.map(async (p) => {
+          const [problem, solution] = await Promise.all([translate(p.problem), translate(p.solution)]);
+          return { problem, solution };
+        })
+      )
+    ]);
 
     return {
       summary: translatedSummary,
