@@ -80,11 +80,14 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   />
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
-                        content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
-                            {`${Math.round(percentage)}%`}
-                          </text>
-                        }
+                        content={(props: any) => {
+                          const { x, y, width, height } = props;
+                          return (
+                            <text x={Number(x) + Number(width) / 2} y={Number(y) + Number(height) / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                              {`${Math.round(percentage)}%`}
+                            </text>
+                          );
+                        }}
                       />
                   </Bar>
                 </BarChart>

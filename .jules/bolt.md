@@ -1,0 +1,3 @@
+## 2024-03-24 - Parallelizing Deep AI Translation Calls
+**Learning:** Genkit workflows and AI actions can easily cause a blocking waterfall if not carefully parallelized. In `src/app/actions.ts`, translating deeply nested study guide content resulted in a complex sequence of top-level and element-level `await` calls that were blocking each other. This led to O(N * LATENCY) translation times.
+**Action:** When translating nested array structures or generating independent sections of an AI prompt sequence, group all independent asynchronous paths with `Promise.all` up to the top level. This converts overall latency to O(LATENCY).
