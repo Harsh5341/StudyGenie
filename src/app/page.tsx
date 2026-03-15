@@ -86,11 +86,15 @@ function StudyGenieApp() {
     }
   }, [originalStudyGuide, language]);
 
-  const handleMaterialChange = (newMaterial: string) => {
+  // ⚡ Bolt Optimization: Memoize event handler to prevent unnecessary re-renders of MaterialProcessor child component
+  // Impact: Prevents MaterialProcessor from re-rendering every time StudyGenieApp state updates
+  const handleMaterialChange = React.useCallback((newMaterial: string) => {
     setMaterial(newMaterial);
-  };
+  }, []);
   
-  const handleQuizComplete = (data: QuizCompletionData) => {
+  // ⚡ Bolt Optimization: Memoize event handler to prevent unnecessary re-renders of InteractiveLearning child component
+  // Impact: Prevents InteractiveLearning from re-rendering every time StudyGenieApp state updates
+  const handleQuizComplete = React.useCallback((data: QuizCompletionData) => {
     setQuizScore(data.score);
     setTotalQuestions(data.totalQuestions);
     setTopicPerformance(data.topicPerformance);
@@ -115,11 +119,13 @@ function StudyGenieApp() {
       localStorage.setItem("studyStreak", "1");
       localStorage.setItem("lastQuizCompletion", now.toISOString());
     }
-  };
+  }, []);
 
-  const handleNewAnswer = (response: AiTeacherResponse) => {
+  // ⚡ Bolt Optimization: Memoize event handler to prevent unnecessary re-renders of AiTeacher child component
+  // Impact: Prevents AiTeacher from re-rendering every time StudyGenieApp state updates
+  const handleNewAnswer = React.useCallback((response: AiTeacherResponse) => {
     setConversationHistory(prev => [...prev, response]);
-  }
+  }, []);
 
   const studyGuide = translatedStudyGuide;
 

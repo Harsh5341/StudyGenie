@@ -56,7 +56,9 @@ function PracticeProblems({ problems }: { problems: PracticeProblem[] }) {
 }
 
 
-export function InteractiveLearning({ studyGuide, onQuizComplete }: InteractiveLearningProps) {
+// ⚡ Bolt Optimization: Memoize the InteractiveLearning component
+// Impact: Prevents re-rendering the heavy InteractiveLearning component when parent states like `quizScore` or `studyStreak` update
+export const InteractiveLearning = React.memo(function InteractiveLearning({ studyGuide, onQuizComplete }: InteractiveLearningProps) {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
   const nextCard = () => {
@@ -105,4 +107,4 @@ export function InteractiveLearning({ studyGuide, onQuizComplete }: InteractiveL
       </div>
     </div>
   );
-}
+});
