@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useFormStatus } from "react-dom";
 import { Upload, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,9 @@ interface MaterialProcessorProps {
   onMaterialChange: (newMaterial: string) => void;
 }
 
-export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProcessorProps) {
+// ⚡ Bolt Optimization: Memoize the MaterialProcessor component
+// Impact: Prevents re-rendering the component when parent states like `quizScore` or `studyStreak` update
+export const MaterialProcessor = React.memo(function MaterialProcessor({ formAction, onMaterialChange }: MaterialProcessorProps) {
   return (
     <Card>
       <CardHeader>
@@ -63,4 +66,4 @@ export function MaterialProcessor({ formAction, onMaterialChange }: MaterialProc
       </CardContent>
     </Card>
   );
-}
+});
