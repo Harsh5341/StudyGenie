@@ -86,8 +86,17 @@ function StudyGenieApp() {
     }
   }, [originalStudyGuide, language]);
 
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleMaterialChange = (newMaterial: string) => {
-    setMaterial(newMaterial);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    // Debounce the state update to avoid re-rendering the entire app
+    // (including complex components like Recharts) on every keystroke.
+    timeoutRef.current = setTimeout(() => {
+      setMaterial(newMaterial);
+    }, 300);
   };
   
   const handleQuizComplete = (data: QuizCompletionData) => {
