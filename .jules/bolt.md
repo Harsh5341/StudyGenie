@@ -1,0 +1,4 @@
+
+## 2025-03-18 - Recharts Optimization and TypeScript Geometry Props
+**Learning:** Recharts in this React codebase strictly requires data objects (like arrays mapping data for `BarChart`) to be memoized. If they are created inline or unmemoized during render, they trigger expensive full-layout recalculations and DOM thrashing. Additionally, custom component geometric properties (e.g. `<Label content={({x, y, width, height}) => ...} />`) can be typed as potentially undefined in Strict TypeScript configs within this specific repository and require fallback casting to numbers.
+**Action:** Always wrap Recharts data arrays in `useMemo` when passing them down to `data={...}`. When rendering custom SVG elements with Recharts geometric props, destructure them but always check for `undefined` or cast them to a safe default `0` before arithmetic operations.
