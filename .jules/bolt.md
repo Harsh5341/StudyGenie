@@ -1,0 +1,3 @@
+## 2024-03-24 - Recharts Data Memoization Pattern
+**Learning:** Recharts triggers highly expensive full SVG recalculations on every render if the `data` prop objects aren't referentially stable. Even simple object mapping inside the render function causes severe performance degradation as the DOM thrashes.
+**Action:** Always wrap dynamically generated arrays or objects intended for Recharts components in `useMemo` to preserve referential equality and prevent layout thrashing. Also ensure custom geometric properties (like `x`, `y`, `width`, `height`) inside `Label` have explicit `undefined` checks to avoid arithmetic calculation errors on first-render.
