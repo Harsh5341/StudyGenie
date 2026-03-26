@@ -1,0 +1,3 @@
+## 2026-03-26 - [Memoize Recharts Data and Geometric Prop Types]
+**Learning:** Dynamically generated arrays/objects passed to Recharts components (e.g., `<BarChart data={...}>`) will cause expensive full SVG recalculations and layout thrashing on every render if not memoized. In addition, when implementing custom labels or shapes in Recharts, geometric props like `x`, `y`, `width`, `height` are often strictly validated but can be passed as strings or undefined. They require explicit checking and coercion.
+**Action:** Always wrap dynamically generated arrays/objects destined for Recharts in `useMemo`. Ensure custom Recharts render props explicitly check and safely coerce geometric props to satisfy strict TypeScript validation and avoid arithmetic errors.
