@@ -1,0 +1,3 @@
+## 2024-04-06 - Prevent Recharts SVG Layout Thrashing
+**Learning:** Recharts triggers expensive SVG recalculations and layout updates when object references for geometric configuration (`margin={{ top: 10 }}`) or dynamic `data` array props change on every render, causing significant main-thread latency, even if the underlying data values haven't actually changed.
+**Action:** Always memoize derived `data` arrays (using `useMemo` with minimal dependencies) and extract static geometric objects like `margin` outside of the React component to preserve reference equality before passing them to Recharts components.
