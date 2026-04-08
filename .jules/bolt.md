@@ -1,0 +1,3 @@
+## 2024-03-05 - Recharts Geometric Props and Strict TypeScript
+**Learning:** When using custom `<Label>` renderers in Recharts, geometric props passed to the render function (like `x`, `y`, `width`, `height`) can be strictly typed as potentially `undefined` or strings by TypeScript, depending on the Recharts version and configuration. Attempting to perform arithmetic on them directly (e.g. `x + width / 2`) causes strict TS compilation errors.
+**Action:** Always safely coerce geometric props to numbers (`Number(x) || 0`) inside Recharts custom render functions to ensure strict typechecking passes while avoiding arithmetic errors.
