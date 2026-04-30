@@ -1,0 +1,3 @@
+## 2024-05-19 - Recharts Unnecessary Recalculations
+**Learning:** Recharts triggers expensive full SVG recalculations and layout thrashing if object props (like `margin={{ top: 20... }}`) or dynamically generated data arrays are passed directly to `<BarChart>` and other components, because their reference equality changes on every render. Additionally, custom `<Label>` geometries (`x`, `y`, `width`, `height`) might be passed as strings, requiring safe coercion.
+**Action:** Extract static configuration objects outside the component body. Always wrap dynamically mapped array data for Recharts in `useMemo`. Explicitly coerce geometric props in custom Recharts components to numbers (`Number(x) || 0`) to satisfy strict types and avoid arithmetic layout issues.
