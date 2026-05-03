@@ -1,0 +1,3 @@
+## 2024-05-03 - Recharts Referential Stability Pattern
+**Learning:** Recharts SVG components trigger expensive full recalculations and layout thrashings when dynamically generated objects/arrays (like chart data, or inline objects like `margin={{...}}`) are passed, because they lose referential equality across renders.
+**Action:** Always extract static configuration objects outside the React component body and wrap dynamically generated chart data arrays in `useMemo`. Also, strict TypeScript typing requires careful coercion in custom `Label` components since geometric properties like `x`, `y`, `width` or `height` can be passed as strings or `undefined`.
