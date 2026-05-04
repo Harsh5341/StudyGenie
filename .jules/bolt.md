@@ -1,0 +1,3 @@
+## 2024-03-24 - Recharts Performance Insights
+**Learning:** Recharts is highly sensitive to reference changes for the `data` and `margin` props, which can trigger expensive, full SVG recalculations and layout thrashing. Additionally, custom `<Label>` properties (`x`, `y`, `width`, `height`) are typed as `number | string` or potentially undefined, requiring strict numerical coercion to avoid arithmetic errors in TS-strict Next.js environments.
+**Action:** Always wrap dynamically generated arrays passed to Recharts in `useMemo`, extract inline object configurations like `margin` outside of the component body, and safely parse geometric string/number unions before performing arithmetic operations.
