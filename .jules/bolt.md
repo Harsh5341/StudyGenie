@@ -1,0 +1,3 @@
+## 2024-05-05 - Recharts Data Memoization and Static Config
+**Learning:** Recharts charts (like `BarChart`) recalculate heavily on every render if the `data` array or static configuration objects (like `margin`) lose reference equality. This application dynamically constructs `heatmapData` and `quizData` arrays on each render in `ProgressDashboard.tsx`, and passes inline `margin={{ top: 20... }}` props. This causes layout thrashing and expensive SVG recalculations even if the data itself hasn't changed.
+**Action:** Always wrap dynamically generated arrays passed to Recharts in `useMemo`, and extract static config objects (like `margin`) outside the component body to preserve reference equality.
