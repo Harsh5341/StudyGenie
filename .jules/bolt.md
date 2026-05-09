@@ -1,0 +1,3 @@
+## 2026-05-09 - Recharts Memoization and Static Prop Extraction
+**Learning:** Passing dynamically generated arrays or objects to Recharts components (e.g., `<BarChart data={...}>`) can trigger expensive, unnecessary full SVG recalculations and layout thrashing on every render. Inline static configuration objects like `margin={{ top: 20... }}` also break reference equality.
+**Action:** Always wrap derived data arrays in `useMemo` and extract static configuration objects outside of React component bodies to preserve reference equality and prevent unnecessary downstream recalculations in Recharts.
