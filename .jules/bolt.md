@@ -1,0 +1,3 @@
+## 2025-02-20 - Recharts Re-render Prevention
+**Learning:** Recharts components often cause expensive layout thrashing and full SVG recalculations on each render if provided inline arrays (e.g. `data={[...]}`) or static configurations (e.g. `margin={{...}}`). Geometric props in Recharts (like `x`, `y`, `width`, `height`) may also be strings, and should be coerced to Number when manipulated.
+**Action:** Always extract static configuration objects outside the React component body or wrap dynamically generated arrays and objects in `useMemo` when passing them to Recharts components. Safely coerce Recharts `Label` geometric props to `Number` before performing arithmetic.
