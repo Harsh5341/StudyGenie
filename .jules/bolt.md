@@ -1,0 +1,3 @@
+## 2024-05-18 - Recharts Array and Static Object Invalidation
+**Learning:** In Next.js App Router applications using Recharts, passing dynamically generated arrays (`quizData`, `heatmapData`) or inline margin objects (`margin={{ top: 20... }}`) directly into `<BarChart>` components triggers expensive full SVG recalculations and layout thrashing on every render, even when the underlying values haven't changed.
+**Action:** Always wrap Recharts data arrays in `useMemo` and extract static configuration objects (like margins) outside the React component body to preserve reference equality. Ensure custom Label geometry props are safely coerced to numbers to satisfy strict TypeScript validation and avoid arithmetic errors when Recharts passes them as strings or undefined.
