@@ -1,0 +1,3 @@
+## 2024-05-15 - Recharts Memoization and Typing
+**Learning:** Recharts components often expect arrays and objects. If these are constructed inside the render scope (like `margin` objects or `data` arrays derived from props) without memoization, it causes expensive full SVG recalculations on every render. Also, geometry props inside custom Recharts shapes/labels (like `x, y, width, height`) can be passed as strings or undefined and must be strictly coerced to numbers to prevent arithmetic errors in TypeScript.
+**Action:** Extract static Recharts configuration objects outside the component, wrap dynamic arrays in `useMemo`, and explicitly cast Recharts geometric render props using `Number(val) || 0` in custom shapes.
