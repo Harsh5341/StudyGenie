@@ -1,0 +1,3 @@
+## 2026-05-17 - Recharts Referential Equality Optimization
+**Learning:** When passing dynamically generated arrays or objects to Recharts components (e.g., `<BarChart data={...}>`), they must be wrapped in `useMemo` (and static config objects extracted out of render), otherwise the lack of referential equality triggers expensive, unnecessary full SVG recalculations and layout thrashing on every parent render cycle.
+**Action:** Always extract inline static objects passed as props to Recharts (like `margin={{ top: 20... }}`) to module-level constants, and wrap dynamically mapped data arrays like heatmap data in `useMemo` before passing them to Recharts.
