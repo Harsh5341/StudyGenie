@@ -1,11 +1,15 @@
 
 "use client"
 
+import { useMemo } from "react";
 import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label, Cell } from 'recharts';
 import { Target, BarChart3, Flame, Map, PieChart } from "lucide-react";
+
+const quizChartMargin = { top: 20, right: 30, left: 20, bottom: 5 };
+const heatmapChartMargin = { top: 5, right: 20, left: 0, bottom: 60 };
 
 interface ProgressDashboardProps {
   studyGuide: StudyGuide;
@@ -22,16 +26,18 @@ const getProficiencyColor = (percentage: number) => {
 };
 
 export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
-  const quizData = quizScore !== null ? [
+  // Optimize: Memoize dynamic chart data to prevent unnecessary re-renders in Recharts
+  const quizData = useMemo(() => quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
-  ] : [];
+  ] : [], [quizScore, totalQuestions]);
 
   const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
 
-  const heatmapData = Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
+  // Optimize: Memoize dynamic chart data to prevent unnecessary re-renders in Recharts
+  const heatmapData = useMemo(() => Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
     name: topic,
     proficiency: total > 0 ? (correct / total) * 100 : 0,
-  }));
+  })), [topicPerformance]);
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
@@ -71,7 +77,8 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
           <div className="h-[200px]">
             {quizScore !== null ? (
                <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={quizData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                {/* Optimize: Use extracted margin objects to prevent chart re-rendering */}
+                <BarChart data={quizData} layout="vertical" margin={quizChartMargin}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" domain={[0, totalQuestions]} ticks={[0, totalQuestions/2, totalQuestions]} />
                   <YAxis type="category" dataKey="name" hide />
@@ -80,11 +87,17 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   />
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
-                        content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
-                            {`${Math.round(percentage)}%`}
-                          </text>
-                        }
+                        content={({ value, x, y, width, height }) => {
+                          const numX = Number(x) || 0;
+                          const numY = Number(y) || 0;
+                          const numWidth = Number(width) || 0;
+                          const numHeight = Number(height) || 0;
+                          return (
+                            <text x={numX + numWidth / 2} y={numY + numHeight / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                              {`${Math.round(percentage)}%`}
+                            </text>
+                          );
+                        }}
                       />
                   </Bar>
                 </BarChart>
@@ -122,7 +135,8 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
            <div className="h-[250px] flex items-center justify-center">
             {heatmapData.length > 0 ? (
                <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={heatmapData} layout="horizontal" margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
+                {/* Optimize: Use extracted margin objects to prevent chart re-rendering */}
+                <BarChart data={heatmapData} layout="horizontal" margin={heatmapChartMargin}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={1} />
                   <YAxis domain={[0, 100]} unit="%" />

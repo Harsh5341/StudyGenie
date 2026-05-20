@@ -1,0 +1,3 @@
+## 2024-05-18 - Recharts Render Optimization
+**Learning:** Passing inline objects (like `margin={{ top: 20... }}`) or unmemoized dynamic arrays directly as props to Recharts components causes unnecessary full SVG recalculations and layout thrashing on every parent render. Recharts geometry props (`x`, `y`, `width`, `height`) in custom label functions can be passed as undefined or string types, leading to TypeScript errors when performing arithmetic operations.
+**Action:** Extract static configuration objects outside the React component body and wrap dynamically derived chart data arrays in `useMemo`. When writing custom label render functions for Recharts, defensively cast geometric props to numbers (`Number(x) || 0`) before using them in calculations.
