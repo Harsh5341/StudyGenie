@@ -1,0 +1,3 @@
+## 2023-10-27 - Recharts Referential Equality
+**Learning:** Recharts strictly checks data array referential equality and will aggressively re-calculate/re-paint entire SVG nodes if inline arrays or configuration objects (like `margin={{...}}`) are constructed dynamically inside the component body, even if the primitive values haven't changed.
+**Action:** Always extract static configuration objects outside of the React component, and wrap dynamic Recharts data arrays in `useMemo` hooks. Also, geometric props in custom Recharts components (like Label) can sometimes come back as strings, so always coerce them to Numbers safely to prevent NaN crashes.
