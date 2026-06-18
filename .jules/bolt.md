@@ -1,0 +1,3 @@
+## 2024-06-18 - Recharts Reference Equality Optimization
+**Learning:** Passing dynamically generated arrays and inline configuration objects directly to Recharts component props causes unnecessary layout thrashing and SVG recalculation. The custom geometry props passed to Recharts `<Label>` can also come in as undefined/string and need to be explicitly coerced to numbers when used in arithmetic equations to prevent NaN errors that break builds and runtime visualization.
+**Action:** Use `useMemo` to stabilize arrays mapping, hoist constant inline configuration components like `margin={{...}}` to top-level variables outside of the render body, and enforce strict type coercion inside Recharts custom render prop labels.
