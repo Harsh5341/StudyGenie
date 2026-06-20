@@ -1,0 +1,3 @@
+## 2025-02-24 - Recharts Typescript Issue and useMemo optimization
+**Learning:** Recharts passes `x`, `y`, `width`, and `height` to its generic `Label` rendering function as `string | number | undefined`. Attempting to add these properties without proper casting to `number` produces a TS error ("Operator + cannot be applied to types..."). Also passing unmemoized dynamically created arrays to Recharts component triggers unnecessary full SVG re-renders.
+**Action:** Always cast Recharts geometric props (`x`, `y`, `width`, `height`) to `number` and check for truthiness to prevent TS errors. Wrap Recharts data arrays in `useMemo`.
