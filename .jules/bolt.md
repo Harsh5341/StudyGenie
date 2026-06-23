@@ -1,0 +1,3 @@
+## 2024-05-24 - Recharts Strict Prop Coercion & Reference Equality
+**Learning:** Recharts components can cause severe layout thrashing if data arrays and inline object props (like margin) are recreated every render. Also, custom labels receive geometric props that are strictly typed as string | number but often treated as raw numbers in basic arithmetic, causing strict TypeScript errors.
+**Action:** Extract static config objects outside the component, wrap derived data arrays in useMemo, and safely coerce custom label geometric props to numbers to satisfy strict TS checks and improve performance.
