@@ -1,0 +1,3 @@
+## 2024-06-29 - Recharts Optimizations
+**Learning:** Passing dynamically created arrays and inline configuration objects (like margin props) to Recharts components (e.g., BarChart) triggers expensive full SVG recalculations and layout thrashing on every render, as reference equality checks fail. Additionally, custom label geometric props require explicit number coercion to prevent typescript errors or arithmetic bugs when calculating positions.
+**Action:** Always wrap Recharts data structures in `useMemo` and extract static configuration objects outside the component body. Safely coerce geometric props (`x`, `y`, `width`, `height`) to numbers in custom labels/shapes.
