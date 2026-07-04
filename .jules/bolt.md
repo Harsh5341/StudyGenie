@@ -1,0 +1,3 @@
+## 2024-05-24 - Recharts Data and Prop Optimization
+**Learning:** Passing dynamically generated arrays or objects to Recharts components (e.g., `<BarChart data={...}>`) without `useMemo`, or using inline static configuration objects (like `margin`), forces Recharts to perform expensive, full SVG recalculations and layout thrashing on every render. Also, geometric props like `x` and `y` must be safely coerced to numbers to prevent strict TS errors.
+**Action:** Always wrap Recharts dynamic data arrays in `useMemo`, extract static configuration objects outside the component body, and explicitly cast geometric props to numbers when rendering custom Recharts shapes or labels.
