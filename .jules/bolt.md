@@ -1,0 +1,3 @@
+## 2024-05-14 - Prevent Recharts Re-renders
+**Learning:** Recharts forces full layout recalculations and DOM updates when `margin` objects or `data` arrays lose reference equality across renders, which is common in App Router applications. Also, passing dynamically-calculated geometric properties like `x` and `y` directly into a custom `<Label>` inside a Recharts `<Bar>` component causes type unsafety or `NaN` outputs unless they are safely coerced.
+**Action:** Always extract inline static configurations (e.g., margins) out of the component scope, and always wrap dynamically generated arrays passed into Recharts with `useMemo`. Coerce custom label geometry props into numbers prior to arithmetic.
