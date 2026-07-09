@@ -1,0 +1,3 @@
+## 2024-07-09 - Recharts Full Layout Recalculation Overhead
+**Learning:** Recharts components re-calculate full SVG layouts when dynamically generated objects (like layout margins) and properties (like data array literals mapped directly in props) lose reference equality. Furthermore, custom labels built off SVG geometry coordinates require explicit typecasting/coercion to handle undefined string layouts correctly under strict types.
+**Action:** Always extract static geometry configs to constants outside component bodies, wrap data processing in `useMemo` hooks, and enforce type coercion on coordinate geometries in layout props.
