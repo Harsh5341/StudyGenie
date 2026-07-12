@@ -1,0 +1,3 @@
+## 2026-07-12 - Prevent Recharts Re-renders via Data Memoization and Static Props
+**Learning:** In this Next.js app, Recharts components (<BarChart data={...}>) will perform expensive SVG recalculations and cause layout thrashing on every render if the data array or inline configuration objects (like margin) are not reference-equal between renders. Additionally, custom Labels can receive string geometric properties leading to TypeScript strictness issues or math errors if not coerced.
+**Action:** Always wrap dynamically derived chart data in useMemo, extract static config objects outside the component body, and explicitly cast geometric custom component props (x, y, width, height) to Number before performing arithmetic.
