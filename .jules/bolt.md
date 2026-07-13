@@ -1,0 +1,3 @@
+## 2024-07-13 - Memoizing Recharts Data to prevent expensive re-renders
+**Learning:** Recharts components like `BarChart` perform expensive full SVG recalculations and layout thrashing if dynamically generated data objects or arrays are passed inline or recreated on every render. Inline static configuration props like `margin` also cause unnecessary downstream recalculations due to lost reference equality.
+**Action:** Always wrap Recharts dynamically generated arrays/objects in `useMemo`, and extract static configuration objects outside the React component body to preserve reference equality. Ensure custom label geometric props are safely coerced to numbers to satisfy strict TypeScript validation and avoid arithmetic errors.
