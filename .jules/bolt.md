@@ -1,0 +1,3 @@
+## 2026-07-15 - Recharts Performance and Label Coercion
+**Learning:** When passing dynamically generated arrays (like quizData and heatmapData) to Recharts components, they must be wrapped in useMemo to prevent expensive full SVG recalculations and layout thrashing on every render. Additionally, inline configuration objects (like margin) should be extracted outside the component. Finally, Recharts geometric props passed to custom Labels can sometimes be strings or undefined, so they must be explicitly coerced to numbers to avoid TypeScript/arithmetic errors.
+**Action:** Always wrap Recharts data arrays in useMemo, extract static config objects outside the component, and explicitly coerce geometric props to numbers in custom content renderers.
