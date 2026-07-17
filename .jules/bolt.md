@@ -1,0 +1,3 @@
+## 2026-07-17 - Recharts Performance and Reference Equality
+**Learning:** Recharts components like `BarChart` perform expensive SVG recalculations if their `data` or configuration props (like `margin`) lose reference equality between renders. Additionally, custom geometric render props (like `x`, `y`, `width`, `height` in `Label`) can sometimes be typed as strings or undefined and must be explicitly coerced to numbers to prevent TypeScript errors during arithmetic operations.
+**Action:** Always wrap dynamically constructed arrays or objects passed to Recharts in `useMemo`, and extract static configuration objects (like margins) outside the component. Always safely coerce geometric props to numbers when calculating custom SVG label positions.
