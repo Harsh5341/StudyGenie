@@ -1,0 +1,4 @@
+
+## $(date +%Y-%m-%d) - Recharts Memoization Optimization
+**Learning:** Recharts is highly sensitive to reference equality for dynamic arrays (e.g. data arrays) and inline static objects (e.g. margin config) passed to `<BarChart>`. Passing these inline causes expensive SVG recalculations on every render, leading to unnecessary CPU usage. Furthermore, Recharts Label custom render function variables like `x`, `y`, `width`, and `height` need strict numeric coercion (`Number(x) || 0`) because TypeScript warns against arithmetic with potentially string or undefined geometric props.
+**Action:** Always extract static configuration objects (like `margin`) outside of React components and wrap dynamically calculated arrays/objects passed to Recharts components in `useMemo` with appropriate dependency arrays. Ensure strict numeric coercion inside custom Recharts label rendering logic.
