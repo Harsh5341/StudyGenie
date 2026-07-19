@@ -1,0 +1,3 @@
+## 2026-07-19 - Recharts Performance Optimizations
+**Learning:** Passing dynamically generated arrays or objects directly into Recharts components causes expensive, unnecessary full SVG recalculations and layout thrashing on every render. Geometric props (x, y, width, height) passed to custom labels might be strings or undefined, causing TS arithmetic errors if not explicitly checked and safely coerced to numbers.
+**Action:** Always wrap dynamically generated data arrays for Recharts in `useMemo`. Extract static configuration objects (like inline `margin` props) outside the React component body to preserve reference equality. Check and fallback undefined geometric props to numbers (e.g. `Number(x || 0)`).
