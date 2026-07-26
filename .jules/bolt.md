@@ -1,0 +1,3 @@
+## 2026-07-26 - Recharts Object References and Dynamic Data Re-rendering
+**Learning:** In Next.js architectures, passing dynamically generated arrays (like map results) or inline configuration objects (like margin={{ top: 20 }}) directly to Recharts components (e.g., <BarChart>) causes expensive full SVG recalculations and layout thrashing on every render because the reference equality check fails.
+**Action:** Always wrap dynamically generated data arrays passed to Recharts in useMemo and extract static configuration objects outside the React component body to preserve reference equality and prevent unnecessary downstream SVG recalculations.
