@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useMemo } from 'react';
 import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -21,17 +22,23 @@ const getProficiencyColor = (percentage: number) => {
   return 'hsl(var(--chart-2))';
 };
 
+// ⚡ Bolt Optimization: Extracted static configuration objects outside the component body
+// to prevent unnecessary full SVG recalculations on every render due to reference inequality.
+const QUIZ_CHART_MARGIN = { top: 20, right: 30, left: 20, bottom: 5 };
+const HEATMAP_CHART_MARGIN = { top: 5, right: 20, left: 0, bottom: 60 };
+
 export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
-  const quizData = quizScore !== null ? [
+  // ⚡ Bolt Optimization: Memoized data arrays to prevent unnecessary re-renders in Recharts
+  const quizData = useMemo(() => quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
-  ] : [];
+  ] : [], [quizScore, totalQuestions]);
 
   const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
 
-  const heatmapData = Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
+  const heatmapData = useMemo(() => Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
     name: topic,
     proficiency: total > 0 ? (correct / total) * 100 : 0,
-  }));
+  })), [topicPerformance]);
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
@@ -71,7 +78,7 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
           <div className="h-[200px]">
             {quizScore !== null ? (
                <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={quizData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={quizData} layout="vertical" margin={QUIZ_CHART_MARGIN}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" domain={[0, totalQuestions]} ticks={[0, totalQuestions/2, totalQuestions]} />
                   <YAxis type="category" dataKey="name" hide />
@@ -80,11 +87,15 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   />
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
-                        content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
-                            {`${Math.round(percentage)}%`}
-                          </text>
-                        }
+                        content={({ value, x, y, width, height }) => {
+                          const posX = Number(x || 0) + Number(width || 0) / 2;
+                          const posY = Number(y || 0) + Number(height || 0) / 2;
+                          return (
+                            <text x={posX} y={posY} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                              {`${Math.round(percentage)}%`}
+                            </text>
+                          );
+                        }}
                       />
                   </Bar>
                 </BarChart>
@@ -122,7 +133,7 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
            <div className="h-[250px] flex items-center justify-center">
             {heatmapData.length > 0 ? (
                <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={heatmapData} layout="horizontal" margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
+                <BarChart data={heatmapData} layout="horizontal" margin={HEATMAP_CHART_MARGIN}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={1} />
                   <YAxis domain={[0, 100]} unit="%" />
