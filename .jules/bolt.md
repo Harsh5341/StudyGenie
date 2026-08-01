@@ -1,0 +1,3 @@
+## 2026-08-01 - Recharts Performance Optimization
+**Learning:** Recharts can suffer from performance issues if complex layout operations and dynamic data are not properly memoized. Using literal object notation for static properties (like `margin={{ top: 20... }}`) creates new objects on every render, which triggers unnecessary recalculations for the underlying SVG components, slowing down the frontend during updates (such as score updates or data refreshes).
+**Action:** Always declare static configuration objects (like `margin`) outside of React components, and always wrap dynamic data generation bound for Recharts within a `useMemo` block to maintain reference equality.
