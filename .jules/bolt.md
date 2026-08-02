@@ -1,0 +1,3 @@
+## $(date +%Y-%m-%d) - Prevent Recharts Full Re-renders with useMemo
+**Learning:** When passing dynamically generated data arrays (e.g., `quizData`, `heatmapData`) or inline configuration objects (e.g., `margin={{ top: 20... }}`) to Recharts components, they must be wrapped in `useMemo` or extracted outside the component. Otherwise, they lose reference equality on every render, triggering expensive full SVG layout recalculations in Recharts even when the underlying data hasn't changed.
+**Action:** Always memoize derived chart data and static configuration objects passed to Recharts components to maintain reference equality and prevent unnecessary computational overhead.
