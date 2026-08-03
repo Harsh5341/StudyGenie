@@ -1,0 +1,3 @@
+## $(date +%Y-%m-%d) - Wrap dynamically generated arrays passed to Recharts in useMemo
+**Learning:** Recharts components like `BarChart` trigger expensive full SVG layout recalculations when their `data` prop reference changes. Dynamically generated arrays (like `quizData` and `heatmapData`) recreated on every render cause unnecessary performance overhead in React, especially noticeable with complex charts.
+**Action:** When passing dynamically generated data arrays or objects to Recharts components (or other complex visualization libraries), always wrap them in `useMemo` to maintain reference equality and avoid triggering expensive re-renders.
