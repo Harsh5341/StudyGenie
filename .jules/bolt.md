@@ -1,0 +1,3 @@
+## 2024-05-24 - Unmemoized Array Literals Passed to Recharts Trigger Expensive Re-renders
+**Learning:** In the Recharts library, passing dynamically generated array literals directly as props (e.g., `data={...}`) to components like `<BarChart>` triggers full, expensive SVG layout recalculations on every render, even when the underlying data is conceptually identical, because React detects reference inequality. This application builds UI data arrays (`quizData` and `heatmapData`) directly in the `ProgressDashboard` render body without memoization.
+**Action:** When passing dynamically generated data arrays to Recharts components, wrap them in `useMemo` to maintain reference equality across renders, avoiding unnecessary layout processing overhead.
