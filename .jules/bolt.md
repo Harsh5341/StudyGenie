@@ -1,0 +1,3 @@
+## 2024-08-10 - Recharts render optimization
+**Learning:** Recharts triggers expensive full SVG layout recalculations when data props lose reference equality on every render, which happens frequently when data arrays are created inline inside function components. Geometric properties (`x`, `y`, `width`, `height`) inside custom `<Label>` render functions can also be typed as `string | number | undefined`, requiring explicit type guards to satisfy strict TypeScript rules when performing math operations.
+**Action:** Always wrap dynamically generated data arrays intended for Recharts components in `useMemo` to maintain reference equality. Always type-guard geometric properties in custom render functions before using them in mathematical operations.
