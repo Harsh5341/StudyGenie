@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useMemo } from 'react';
 import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -22,16 +23,22 @@ const getProficiencyColor = (percentage: number) => {
 };
 
 export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
-  const quizData = quizScore !== null ? [
+  // Memoize data to prevent Recharts from doing expensive SVG recalculations on every render
+  const quizData = useMemo(() => quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
-  ] : [];
+  ] : [], [quizScore, totalQuestions]);
 
   const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
 
-  const heatmapData = Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
+  // Memoize dynamically mapped array for the knowledge heatmap
+  const heatmapData = useMemo(() => Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
     name: topic,
     proficiency: total > 0 ? (correct / total) * 100 : 0,
-  }));
+  })), [topicPerformance]);
+
+  // Extract margins to maintain reference equality and prevent unnecessary re-renders
+  const quizMargin = useMemo(() => ({ top: 20, right: 30, left: 20, bottom: 5 }), []);
+  const heatmapMargin = useMemo(() => ({ top: 5, right: 20, left: 0, bottom: 60 }), []);
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
@@ -71,7 +78,7 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
           <div className="h-[200px]">
             {quizScore !== null ? (
                <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={quizData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={quizData} layout="vertical" margin={quizMargin}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" domain={[0, totalQuestions]} ticks={[0, totalQuestions/2, totalQuestions]} />
                   <YAxis type="category" dataKey="name" hide />
@@ -80,11 +87,19 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   />
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
-                        content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
-                            {`${Math.round(percentage)}%`}
-                          </text>
-                        }
+                        content={({ value, x, y, width, height }) => {
+                          // Type guard against undefined/string to prevent TS errors and runtime issues
+                          const numX = typeof x === 'number' ? x : 0;
+                          const numY = typeof y === 'number' ? y : 0;
+                          const numWidth = typeof width === 'number' ? width : 0;
+                          const numHeight = typeof height === 'number' ? height : 0;
+
+                          return (
+                            <text x={numX + numWidth / 2} y={numY + numHeight / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                              {`${Math.round(percentage)}%`}
+                            </text>
+                          );
+                        }}
                       />
                   </Bar>
                 </BarChart>
@@ -122,7 +137,7 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
            <div className="h-[250px] flex items-center justify-center">
             {heatmapData.length > 0 ? (
                <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={heatmapData} layout="horizontal" margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
+                <BarChart data={heatmapData} layout="horizontal" margin={heatmapMargin}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={1} />
                   <YAxis domain={[0, 100]} unit="%" />
