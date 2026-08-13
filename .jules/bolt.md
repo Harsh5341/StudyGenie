@@ -1,0 +1,3 @@
+## 2024-05-24 - [Recharts Memory Leak/Performance Insight]
+**Learning:** When passing dynamically generated data arrays (like map or filter results) directly into Recharts components as props, Recharts might trigger expensive re-renders and full layout recalculations due to referential inequality on each component render, even if the actual data values haven't changed.
+**Action:** Always wrap dynamically generated data arrays or configuration objects (like `margins`) intended for Recharts components in `useMemo` to maintain referential equality and prevent unnecessary computational overhead during component updates.
