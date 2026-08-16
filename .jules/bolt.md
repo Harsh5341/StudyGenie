@@ -1,0 +1,3 @@
+## 2026-08-16 - [Recharts Array Memoization]
+**Learning:** Recharts components trigger expensive full SVG layout recalculations on every render if the passed data array does not maintain reference equality. Dynamically generated arrays for charts must be wrapped in `useMemo`.
+**Action:** Always wrap dynamically generated data arrays passed to Recharts components (like `quizData` or `heatmapData`) in `useMemo` to prevent unnecessary and costly SVG re-renders. Also, typecast Recharts custom Label geometric properties (like `x`, `y`, `width`, `height`) which may be typed as `number | string` or `undefined` to `number` before using them in mathematical operations to avoid strict TypeScript check failures.
