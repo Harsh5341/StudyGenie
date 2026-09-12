@@ -1,0 +1,3 @@
+## 2026-09-12 - Recharts Performance: Memoizing Data Arrays
+**Learning:** Passing dynamically generated data arrays directly to Recharts components (like `BarChart` or `LineChart`) without memoization causes the arrays to have a new reference on every render. This forces Recharts to perform expensive, full SVG layout recalculations on every render cycle, even when the underlying data hasn't changed, significantly degrading frontend performance in React applications.
+**Action:** Always wrap data arrays and objects passed to Recharts components in `useMemo` to maintain reference equality across renders unless the data actually changes.
