@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label, Cell } from 'recharts';
 import { Target, BarChart3, Flame, Map, PieChart } from "lucide-react";
+import React from "react";
 
 interface ProgressDashboardProps {
   studyGuide: StudyGuide;
@@ -22,16 +23,18 @@ const getProficiencyColor = (percentage: number) => {
 };
 
 export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
-  const quizData = quizScore !== null ? [
+  // Optimization: Memoize quiz data to maintain reference equality and prevent unnecessary Recharts SVG recalculations
+  const quizData = React.useMemo(() => quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
-  ] : [];
+  ] : [], [quizScore, totalQuestions]);
 
   const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
 
-  const heatmapData = Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
+  // Optimization: Memoize heatmap data to prevent expensive Recharts recalculations on unrelated re-renders
+  const heatmapData = React.useMemo(() => Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
     name: topic,
     proficiency: total > 0 ? (correct / total) * 100 : 0,
-  }));
+  })), [topicPerformance]);
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
@@ -80,11 +83,17 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   />
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
-                        content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                        content={({ value, x, y, width, height }) => {
+                          const numX = typeof x === 'number' ? x : 0;
+                          const numY = typeof y === 'number' ? y : 0;
+                          const numWidth = typeof width === 'number' ? width : 0;
+                          const numHeight = typeof height === 'number' ? height : 0;
+                          return (
+                          <text x={numX + numWidth / 2} y={numY + numHeight / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
                             {`${Math.round(percentage)}%`}
                           </text>
-                        }
+                          );
+                        }}
                       />
                   </Bar>
                 </BarChart>
