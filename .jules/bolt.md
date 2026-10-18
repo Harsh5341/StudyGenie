@@ -1,0 +1,3 @@
+## 2025-02-18 - Prevent Recharts Re-renders
+**Learning:** Recharts charts will recalculate expensive SVG layouts if their data prop reference changes. Passing inline arrays or mapping objects without memoization causes these recalculations on every render. Recharts geometric properties on custom render functions (like `<Label>`) can be un-typed or broadly typed (`number | string | undefined`), requiring explicit type-guards for TypeScript `tsc --noEmit`.
+**Action:** Always wrap dynamically generated data arrays or objects passed to Recharts components in `useMemo` to maintain reference equality. Always add type-guards for geometric properties when doing mathematical operations inside Recharts custom render functions.
