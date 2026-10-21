@@ -1,6 +1,7 @@
 
 "use client"
 
+import * as React from "react";
 import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -22,16 +23,24 @@ const getProficiencyColor = (percentage: number) => {
 };
 
 export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
-  const quizData = quizScore !== null ? [
-    { name: 'Score', value: quizScore, total: totalQuestions },
-  ] : [];
+  // Memoize quiz data to preserve reference equality.
+  // Recharts re-renders the entire SVG on data prop change. This prevents expensive recalculations
+  // when the parent component re-renders for unrelated state changes.
+  const quizData = React.useMemo(() => {
+    return quizScore !== null ? [
+      { name: 'Score', value: quizScore, total: totalQuestions },
+    ] : [];
+  }, [quizScore, totalQuestions]);
 
   const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
 
-  const heatmapData = Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
-    name: topic,
-    proficiency: total > 0 ? (correct / total) * 100 : 0,
-  }));
+  // Memoize heatmap data to prevent unnecessary Recharts SVG recalculations.
+  const heatmapData = React.useMemo(() => {
+    return Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
+      name: topic,
+      proficiency: total > 0 ? (correct / total) * 100 : 0,
+    }));
+  }, [topicPerformance]);
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
@@ -80,11 +89,17 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   />
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
-                        content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
-                            {`${Math.round(percentage)}%`}
-                          </text>
-                        }
+                        content={({ value, x, y, width, height }) => {
+                          const safeX = typeof x === 'number' ? x : 0;
+                          const safeY = typeof y === 'number' ? y : 0;
+                          const safeWidth = typeof width === 'number' ? width : 0;
+                          const safeHeight = typeof height === 'number' ? height : 0;
+                          return (
+                            <text x={safeX + safeWidth / 2} y={safeY + safeHeight / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                              {`${Math.round(percentage)}%`}
+                            </text>
+                          );
+                        }}
                       />
                   </Bar>
                 </BarChart>
