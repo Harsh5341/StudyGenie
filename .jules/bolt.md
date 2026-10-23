@@ -1,0 +1,3 @@
+## 2026-10-23 - Prevent Unnecessary Recharts Re-renders
+**Learning:** Passing dynamically generated arrays/objects to Recharts components without memoization causes expensive full SVG layout recalculations on every render. Additionally, Recharts geometric properties (x, y, width, height) in custom renderers require strict type-guarding against `undefined` and `string` types in strict TypeScript environments.
+**Action:** Always wrap data passed to Recharts in `useMemo` to maintain reference equality. Always explicitly type-guard geometric properties (e.g., `typeof x === 'number' ? x : 0`) before performing arithmetic.
