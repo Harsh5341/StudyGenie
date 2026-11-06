@@ -1,5 +1,6 @@
-
 "use client"
+
+import { useMemo } from "react";
 
 import type { StudyGuide } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,16 +23,20 @@ const getProficiencyColor = (percentage: number) => {
 };
 
 export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, studyStreak, topicPerformance }: ProgressDashboardProps) {
-  const quizData = quizScore !== null ? [
+  // Optimization: Memoize chart data to maintain reference equality
+  // Impact: Prevents expensive Recharts SVG recalculations on parent re-renders
+  const quizData = useMemo(() => quizScore !== null ? [
     { name: 'Score', value: quizScore, total: totalQuestions },
-  ] : [];
+  ] : [], [quizScore, totalQuestions]);
 
   const percentage = totalQuestions > 0 ? (quizScore ?? 0) / totalQuestions * 100 : 0;
 
-  const heatmapData = Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
+  // Optimization: Memoize heatmap data to maintain reference equality
+  // Impact: Prevents unnecessary chart re-renders when props haven't changed
+  const heatmapData = useMemo(() => Object.entries(topicPerformance).map(([topic, { correct, total }]) => ({
     name: topic,
     proficiency: total > 0 ? (correct / total) * 100 : 0,
-  }));
+  })), [topicPerformance]);
 
   return (
     <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
@@ -81,7 +86,7 @@ export function ProgressDashboard({ studyGuide, quizScore, totalQuestions, study
                   <Bar dataKey="value" fill="var(--color-chart-1)" barSize={30}>
                      <Label 
                         content={({ value, x, y, width, height }) => 
-                          <text x={x + width / 2} y={y + height / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
+                          <text x={Number(x || 0) + Number(width || 0) / 2} y={Number(y || 0) + Number(height || 0) / 2} fill="#fff" textAnchor="middle" dominantBaseline="middle">
                             {`${Math.round(percentage)}%`}
                           </text>
                         }
